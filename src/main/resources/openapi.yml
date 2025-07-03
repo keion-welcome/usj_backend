@@ -1,0 +1,995 @@
+openapi: 3.0.3
+info:
+  title: USJ Matching App API
+  description: USJでの出会いとマッチングを支援するアプリケーションのAPI
+  version: 1.0.0
+  contact:
+    name: USJ Matching App Team
+    email: support@usj-matching.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: http://localhost:8080
+    description: 開発環境
+  - url: https://api.usj-matching.com
+    description: 本番環境
+
+security:
+  - bearerAuth: []
+  - basicAuth: []
+
+tags:
+  - name: auth
+    description: 認証・認可関連
+  - name: users
+    description: ユーザー管理
+  - name: profiles
+    description: プロフィール管理
+  - name: matching
+    description: マッチング機能
+  - name: messages
+    description: メッセージング
+  - name: attractions
+    description: USJアトラクション情報
+  - name: plans
+    description: デートプラン
+
+paths:
+  # 認証関連
+  /api/auth/register:
+    post:
+      tags:
+        - auth
+      summary: ユーザー登録
+      description: 新規ユーザーを登録します
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRegistrationRequest'
+      responses:
+        '201':
+          description: 登録成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '400':
+          description: 入力エラー
+        '409':
+          description: 既に存在するユーザー
+
+  /api/auth/login:
+    post:
+      tags:
+        - auth
+      summary: ログイン
+      description: ユーザーログインを行います
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: ログイン成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '401':
+          description: 認証失敗
+
+  /api/auth/logout:
+    post:
+      tags:
+        - auth
+      summary: ログアウト
+      description: ユーザーログアウトを行います
+      responses:
+        '200':
+          description: ログアウト成功
+        '401':
+          description: 未認証
+
+  # ユーザー管理
+  /api/users/me:
+    get:
+      tags:
+        - users
+      summary: 現在のユーザー情報取得
+      description: 認証されたユーザーの情報を取得します
+      responses:
+        '200':
+          description: ユーザー情報取得成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          description: 未認証
+
+    put:
+      tags:
+        - users
+      summary: ユーザー情報更新
+      description: 認証されたユーザーの基本情報を更新します
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserUpdateRequest'
+      responses:
+        '200':
+          description: 更新成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: 入力エラー
+        '401':
+          description: 未認証
+
+  # プロフィール管理
+  /api/profiles/me:
+    get:
+      tags:
+        - profiles
+      summary: 自分のプロフィール取得
+      description: 認証されたユーザーの詳細プロフィールを取得します
+      responses:
+        '200':
+          description: プロフィール取得成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Profile'
+        '401':
+          description: 未認証
+
+    put:
+      tags:
+        - profiles
+      summary: プロフィール更新
+      description: 認証されたユーザーのプロフィールを更新します
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProfileUpdateRequest'
+      responses:
+        '200':
+          description: 更新成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Profile'
+        '400':
+          description: 入力エラー
+        '401':
+          description: 未認証
+
+  /api/profiles/{userId}:
+    get:
+      tags:
+        - profiles
+      summary: 他ユーザーのプロフィール取得
+      description: 指定したユーザーの公開プロフィールを取得します
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: プロフィール取得成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicProfile'
+        '401':
+          description: 未認証
+        '404':
+          description: ユーザーが見つかりません
+
+  # マッチング機能
+  /api/matching/candidates:
+    get:
+      tags:
+        - matching
+      summary: マッチング候補取得
+      description: 現在のユーザーに対するマッチング候補を取得します
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 10
+            minimum: 1
+            maximum: 50
+      responses:
+        '200':
+          description: マッチング候補取得成功
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MatchingCandidate'
+        '401':
+          description: 未認証
+
+  /api/matching/like:
+    post:
+      tags:
+        - matching
+      summary: いいね送信
+      description: 指定したユーザーにいいねを送信します
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LikeRequest'
+      responses:
+        '200':
+          description: いいね送信成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LikeResponse'
+        '400':
+          description: 入力エラー
+        '401':
+          description: 未認証
+
+  /api/matching/matches:
+    get:
+      tags:
+        - matching
+      summary: マッチ一覧取得
+      description: 成立したマッチの一覧を取得します
+      responses:
+        '200':
+          description: マッチ一覧取得成功
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Match'
+        '401':
+          description: 未認証
+
+  # メッセージング
+  /api/messages:
+    get:
+      tags:
+        - messages
+      summary: メッセージ一覧取得
+      description: 指定したマッチのメッセージ一覧を取得します
+      parameters:
+        - name: matchId
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: メッセージ一覧取得成功
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Message'
+        '401':
+          description: 未認証
+        '403':
+          description: アクセス権限なし
+
+    post:
+      tags:
+        - messages
+      summary: メッセージ送信
+      description: 指定したマッチにメッセージを送信します
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SendMessageRequest'
+      responses:
+        '201':
+          description: メッセージ送信成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+        '400':
+          description: 入力エラー
+        '401':
+          description: 未認証
+        '403':
+          description: アクセス権限なし
+
+  # USJアトラクション情報
+  /api/attractions:
+    get:
+      tags:
+        - attractions
+      summary: アトラクション一覧取得
+      description: USJのアトラクション一覧を取得します
+      parameters:
+        - name: category
+          in: query
+          schema:
+            type: string
+            enum: [RIDE, SHOW, RESTAURANT, SHOP, OTHER]
+        - name: area
+          in: query
+          schema:
+            type: string
+            enum: [HOLLYWOOD, NEW_YORK, SAN_FRANCISCO, JURASSIC_PARK, AMITY_VILLAGE, WATERWORLD, WIZARDING_WORLD, MINION_PARK, OTHER]
+      responses:
+        '200':
+          description: アトラクション一覧取得成功
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Attraction'
+
+  /api/attractions/{attractionId}:
+    get:
+      tags:
+        - attractions
+      summary: アトラクション詳細取得
+      description: 指定したアトラクションの詳細情報を取得します
+      parameters:
+        - name: attractionId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: アトラクション詳細取得成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AttractionDetail'
+        '404':
+          description: アトラクションが見つかりません
+
+  # デートプラン
+  /api/plans:
+    get:
+      tags:
+        - plans
+      summary: デートプラン一覧取得
+      description: 作成したデートプランの一覧を取得します
+      responses:
+        '200':
+          description: デートプラン一覧取得成功
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DatePlan'
+        '401':
+          description: 未認証
+
+    post:
+      tags:
+        - plans
+      summary: デートプラン作成
+      description: 新しいデートプランを作成します
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateDatePlanRequest'
+      responses:
+        '201':
+          description: デートプラン作成成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DatePlan'
+        '400':
+          description: 入力エラー
+        '401':
+          description: 未認証
+
+  /api/plans/{planId}:
+    get:
+      tags:
+        - plans
+      summary: デートプラン詳細取得
+      description: 指定したデートプランの詳細を取得します
+      parameters:
+        - name: planId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: デートプラン詳細取得成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DatePlanDetail'
+        '401':
+          description: 未認証
+        '403':
+          description: アクセス権限なし
+        '404':
+          description: デートプランが見つかりません
+
+    put:
+      tags:
+        - plans
+      summary: デートプラン更新
+      description: 指定したデートプランを更新します
+      parameters:
+        - name: planId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateDatePlanRequest'
+      responses:
+        '200':
+          description: デートプラン更新成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DatePlan'
+        '400':
+          description: 入力エラー
+        '401':
+          description: 未認証
+        '403':
+          description: アクセス権限なし
+        '404':
+          description: デートプランが見つかりません
+
+    delete:
+      tags:
+        - plans
+      summary: デートプラン削除
+      description: 指定したデートプランを削除します
+      parameters:
+        - name: planId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: デートプラン削除成功
+        '401':
+          description: 未認証
+        '403':
+          description: アクセス権限なし
+        '404':
+          description: デートプランが見つかりません
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    basicAuth:
+      type: http
+      scheme: basic
+
+  schemas:
+    # 認証関連
+    UserRegistrationRequest:
+      type: object
+      required:
+        - email
+        - password
+        - nickname
+        - birthDate
+        - gender
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          minLength: 8
+        nickname:
+          type: string
+          maxLength: 20
+        birthDate:
+          type: string
+          format: date
+        gender:
+          type: string
+          enum: [MALE, FEMALE, OTHER]
+
+    LoginRequest:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+
+    AuthResponse:
+      type: object
+      properties:
+        token:
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+
+    # ユーザー関連
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        email:
+          type: string
+          format: email
+        nickname:
+          type: string
+        birthDate:
+          type: string
+          format: date
+        gender:
+          type: string
+          enum: [MALE, FEMALE, OTHER]
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    UserUpdateRequest:
+      type: object
+      properties:
+        nickname:
+          type: string
+          maxLength: 20
+        birthDate:
+          type: string
+          format: date
+
+    # プロフィール関連
+    Profile:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        userId:
+          type: integer
+          format: int64
+        bio:
+          type: string
+          maxLength: 500
+        height:
+          type: integer
+          minimum: 100
+          maximum: 250
+        occupation:
+          type: string
+          maxLength: 50
+        hobbies:
+          type: array
+          items:
+            type: string
+        favoriteAttractions:
+          type: array
+          items:
+            type: integer
+            format: int64
+        visitFrequency:
+          type: string
+          enum: [FIRST_TIME, MONTHLY, WEEKLY, DAILY]
+        preferredAreas:
+          type: array
+          items:
+            type: string
+            enum: [HOLLYWOOD, NEW_YORK, SAN_FRANCISCO, JURASSIC_PARK, AMITY_VILLAGE, WATERWORLD, WIZARDING_WORLD, MINION_PARK, OTHER]
+        profileImages:
+          type: array
+          items:
+            type: string
+            format: uri
+        isVisible:
+          type: boolean
+          default: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    ProfileUpdateRequest:
+      type: object
+      properties:
+        bio:
+          type: string
+          maxLength: 500
+        height:
+          type: integer
+          minimum: 100
+          maximum: 250
+        occupation:
+          type: string
+          maxLength: 50
+        hobbies:
+          type: array
+          items:
+            type: string
+        favoriteAttractions:
+          type: array
+          items:
+            type: integer
+            format: int64
+        visitFrequency:
+          type: string
+          enum: [FIRST_TIME, MONTHLY, WEEKLY, DAILY]
+        preferredAreas:
+          type: array
+          items:
+            type: string
+            enum: [HOLLYWOOD, NEW_YORK, SAN_FRANCISCO, JURASSIC_PARK, AMITY_VILLAGE, WATERWORLD, WIZARDING_WORLD, MINION_PARK, OTHER]
+        profileImages:
+          type: array
+          items:
+            type: string
+            format: uri
+        isVisible:
+          type: boolean
+
+    PublicProfile:
+      type: object
+      properties:
+        userId:
+          type: integer
+          format: int64
+        nickname:
+          type: string
+        age:
+          type: integer
+        bio:
+          type: string
+        height:
+          type: integer
+        occupation:
+          type: string
+        hobbies:
+          type: array
+          items:
+            type: string
+        favoriteAttractions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Attraction'
+        visitFrequency:
+          type: string
+          enum: [FIRST_TIME, MONTHLY, WEEKLY, DAILY]
+        preferredAreas:
+          type: array
+          items:
+            type: string
+            enum: [HOLLYWOOD, NEW_YORK, SAN_FRANCISCO, JURASSIC_PARK, AMITY_VILLAGE, WATERWORLD, WIZARDING_WORLD, MINION_PARK, OTHER]
+        profileImages:
+          type: array
+          items:
+            type: string
+            format: uri
+
+    # マッチング関連
+    MatchingCandidate:
+      type: object
+      properties:
+        profile:
+          $ref: '#/components/schemas/PublicProfile'
+        compatibility:
+          type: number
+          format: float
+          minimum: 0
+          maximum: 100
+
+    LikeRequest:
+      type: object
+      required:
+        - targetUserId
+      properties:
+        targetUserId:
+          type: integer
+          format: int64
+
+    LikeResponse:
+      type: object
+      properties:
+        isMatch:
+          type: boolean
+        match:
+          $ref: '#/components/schemas/Match'
+
+    Match:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        user1:
+          $ref: '#/components/schemas/PublicProfile'
+        user2:
+          $ref: '#/components/schemas/PublicProfile'
+        matchedAt:
+          type: string
+          format: date-time
+        lastMessageAt:
+          type: string
+          format: date-time
+
+    # メッセージング関連
+    Message:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        matchId:
+          type: integer
+          format: int64
+        senderId:
+          type: integer
+          format: int64
+        content:
+          type: string
+          maxLength: 1000
+        sentAt:
+          type: string
+          format: date-time
+        isRead:
+          type: boolean
+          default: false
+
+    SendMessageRequest:
+      type: object
+      required:
+        - matchId
+        - content
+      properties:
+        matchId:
+          type: integer
+          format: int64
+        content:
+          type: string
+          maxLength: 1000
+
+    # アトラクション関連
+    Attraction:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        category:
+          type: string
+          enum: [RIDE, SHOW, RESTAURANT, SHOP, OTHER]
+        area:
+          type: string
+          enum: [HOLLYWOOD, NEW_YORK, SAN_FRANCISCO, JURASSIC_PARK, AMITY_VILLAGE, WATERWORLD, WIZARDING_WORLD, MINION_PARK, OTHER]
+        description:
+          type: string
+        imageUrl:
+          type: string
+          format: uri
+        averageWaitTime:
+          type: integer
+          minimum: 0
+        isOperating:
+          type: boolean
+          default: true
+
+    AttractionDetail:
+      allOf:
+        - $ref: '#/components/schemas/Attraction'
+        - type: object
+          properties:
+            detailedDescription:
+              type: string
+            heightRestriction:
+              type: integer
+              minimum: 0
+            duration:
+              type: integer
+              minimum: 0
+            capacity:
+              type: integer
+              minimum: 0
+            fastPassAvailable:
+              type: boolean
+            accessibility:
+              type: array
+              items:
+                type: string
+            operatingHours:
+              type: object
+              properties:
+                open:
+                  type: string
+                  format: time
+                close:
+                  type: string
+                  format: time
+
+    # デートプラン関連
+    DatePlan:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        title:
+          type: string
+          maxLength: 100
+        description:
+          type: string
+          maxLength: 500
+        creatorId:
+          type: integer
+          format: int64
+        sharedWithUserId:
+          type: integer
+          format: int64
+        scheduledDate:
+          type: string
+          format: date
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/DatePlanItem'
+        status:
+          type: string
+          enum: [DRAFT, SHARED, CONFIRMED, COMPLETED, CANCELLED]
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    DatePlanDetail:
+      allOf:
+        - $ref: '#/components/schemas/DatePlan'
+        - type: object
+          properties:
+            creator:
+              $ref: '#/components/schemas/PublicProfile'
+            sharedWithUser:
+              $ref: '#/components/schemas/PublicProfile'
+
+    DatePlanItem:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        attractionId:
+          type: integer
+          format: int64
+        attraction:
+          $ref: '#/components/schemas/Attraction'
+        scheduledTime:
+          type: string
+          format: time
+        estimatedDuration:
+          type: integer
+          minimum: 0
+        notes:
+          type: string
+          maxLength: 200
+        order:
+          type: integer
+          minimum: 0
+
+    CreateDatePlanRequest:
+      type: object
+      required:
+        - title
+        - scheduledDate
+      properties:
+        title:
+          type: string
+          maxLength: 100
+        description:
+          type: string
+          maxLength: 500
+        scheduledDate:
+          type: string
+          format: date
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/CreateDatePlanItemRequest'
+
+    CreateDatePlanItemRequest:
+      type: object
+      required:
+        - attractionId
+        - order
+      properties:
+        attractionId:
+          type: integer
+          format: int64
+        scheduledTime:
+          type: string
+          format: time
+        estimatedDuration:
+          type: integer
+          minimum: 0
+        notes:
+          type: string
+          maxLength: 200
+        order:
+          type: integer
+          minimum: 0
+
+    UpdateDatePlanRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          maxLength: 100
+        description:
+          type: string
+          maxLength: 500
+        scheduledDate:
+          type: string
+          format: date
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/CreateDatePlanItemRequest'
+        status:
+          type: string
+          enum: [DRAFT, SHARED, CONFIRMED, COMPLETED, CANCELLED]

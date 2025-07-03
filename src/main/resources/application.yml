@@ -1,0 +1,33 @@
+spring:
+  security:
+    user:
+      name: admin
+      password: secret123
+
+  datasource:
+    url: jdbc:postgresql://localhost:15432/usj_db
+    username: usj_user
+    password: secretpass
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update        # 開発中は update、あとで validate や none に
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+# （任意）Actuator のエンドポイント制御
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+# Springdoc OpenAPI の設定
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html    # もしくは /swagger-ui/index.html
+  api-docs:
+    path: /v3/api-docs

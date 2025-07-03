@@ -1,0 +1,16 @@
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: usj-postgres
+    ports:
+      - "15432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+    environment:
+      POSTGRES_USER: usj_user
+      POSTGRES_PASSWORD: secretpass
+      POSTGRES_DB: usj_db
+
+volumes:
+  pgdata:

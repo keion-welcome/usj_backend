@@ -17,7 +17,7 @@ object UserMapper {
      */
     fun toDomain(request: RegisterRequest, encodedPassword: String): User {
         return User(
-            username = request.nickname,
+            username = request.username,
             email = request.email,
             password = encodedPassword
         )

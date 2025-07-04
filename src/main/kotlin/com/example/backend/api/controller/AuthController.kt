@@ -5,7 +5,7 @@ import com.example.backend.api.dto.request.RegisterRequest
 import com.example.backend.api.dto.response.AuthResponse
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
-import com.example.backend.usecase.AuthUseCase
+import com.example.backend.usecase.input.AuthUseCase
 
 /**
  * 認証用のAPIエンドポイントを提供するコントローラー

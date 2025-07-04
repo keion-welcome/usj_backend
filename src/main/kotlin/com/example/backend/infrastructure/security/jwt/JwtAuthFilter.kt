@@ -1,5 +1,6 @@
-package com.example.backend.infrastructure.security
+package com.example.backend.infrastructure.security.jwt
 
+import com.example.backend.infrastructure.security.jwt.JwtUtil
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse

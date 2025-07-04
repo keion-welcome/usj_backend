@@ -1,13 +1,13 @@
-package com.example.backend.usecase
+package com.example.backend.usecase.input
 
 import com.example.backend.api.dto.request.LoginRequest
 import com.example.backend.api.dto.request.RegisterRequest
 import com.example.backend.api.dto.response.AuthResponse
 import com.example.backend.api.mapper.UserMapper
+import com.example.backend.infrastructure.security.jwt.JwtUtil
+import com.example.backend.usecase.output.UserRepositoryPort
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
-import com.example.backend.usecase.port.UserRepositoryPort
-import com.example.backend.infrastructure.security.JwtUtil
 
 /**
  * 認証（登録・ログイン）に関するユースケースを実装。

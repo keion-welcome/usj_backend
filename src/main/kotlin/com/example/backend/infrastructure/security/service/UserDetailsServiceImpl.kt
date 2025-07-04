@@ -1,6 +1,6 @@
-package com.example.backend.infrastructure.security
+package com.example.backend.infrastructure.security.service
 
-import com.example.backend.usecase.port.UserRepositoryPort
+import com.example.backend.usecase.output.UserRepositoryPort
 import org.springframework.security.core.userdetails.User
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
@@ -19,7 +19,7 @@ class UserDetailsServiceImpl(
      * メールアドレスを元にユーザー情報をロードする。
      * @param username 実際にはメールアドレス
      * @return UserDetailsオブジェクト
-     * @throws UsernameNotFoundException ユーザーが見つからない場合
+     * @throws org.springframework.security.core.userdetails.UsernameNotFoundException ユーザーが見つからない場合
      */
     override fun loadUserByUsername(username: String): UserDetails {
         val user = userRepository.findByEmail(username)

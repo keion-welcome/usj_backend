@@ -1,12 +1,11 @@
-package com.example.backend.infrastructure.security
+package com.example.backend.infrastructure.security.jwt
 
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
 import org.springframework.stereotype.Component
 import java.security.Key
-import java.util.*
+import java.util.Date
 import javax.crypto.spec.SecretKeySpec
-import kotlin.text.Charsets.UTF_8
 
 /**
  * JWTトークンの生成・検証を行うユーティリティクラス
@@ -24,7 +23,7 @@ class JwtUtil {
     private val expirationTimeMs: Long = 1000 * 60 * 60 * 10
 
     // 🔑 文字列キーをKey型に変換
-    private val key: Key = SecretKeySpec(secret.toByteArray(UTF_8), algorithm.jcaName)
+    private val key: Key = SecretKeySpec(secret.toByteArray(Charsets.UTF_8), algorithm.jcaName)
 
     /**
      * JWTトークンを生成する

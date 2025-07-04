@@ -1,4 +1,5 @@
-package com.example.backend.usecase.port
+package com.example.backend.usecase.output
+
 import com.example.backend.domain.model.User
 
 /**

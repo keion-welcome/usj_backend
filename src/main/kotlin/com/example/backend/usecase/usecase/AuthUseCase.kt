@@ -1,11 +1,11 @@
-package com.example.backend.usecase.input
+package com.example.backend.usecase.usecase
 
 import com.example.backend.api.dto.request.LoginRequest
 import com.example.backend.api.dto.request.RegisterRequest
 import com.example.backend.api.dto.response.AuthResponse
 import com.example.backend.api.mapper.UserMapper
 import com.example.backend.infrastructure.security.jwt.JwtUtil
-import com.example.backend.usecase.output.UserRepositoryPort
+import com.example.backend.usecase.gateway.UserRepositoryPort
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 

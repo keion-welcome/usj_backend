@@ -1,4 +1,4 @@
-package com.example.backend.usecase.output
+package com.example.backend.usecase.gateway
 
 import com.example.backend.domain.model.User
 

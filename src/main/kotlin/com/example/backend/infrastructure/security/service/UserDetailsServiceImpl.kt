@@ -1,6 +1,6 @@
 package com.example.backend.infrastructure.security.service
 
-import com.example.backend.usecase.output.UserRepositoryPort
+import com.example.backend.usecase.gateway.UserRepositoryPort
 import org.springframework.security.core.userdetails.User
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService

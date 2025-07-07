@@ -5,32 +5,46 @@ import com.example.backend.api.dto.request.RegisterRequest
 import com.example.backend.api.dto.response.AuthResponse
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
-import com.example.backend.usecase.usecase.AuthUseCase
+import com.example.backend.usecase.usecase.LoginUseCase
+import com.example.backend.usecase.usecase.RegisterUseCase
 
 /**
- * 認証用のAPIエンドポイントを提供するコントローラー
+ * 認証関連のAPIエンドポイントを提供するコントローラーです。
+ * 新規登録とログインの機能を提供します。
+ *
+ * @property registerUseCase 新規登録処理のユースケース
+ * @property loginUseCase ログイン処理のユースケース
  */
 @RestController
 @RequestMapping("/api/auth")
 class AuthController(
-    private val authUseCase: AuthUseCase
+    private val registerUseCase: RegisterUseCase,
+    private val loginUseCase: LoginUseCase
 ) {
 
     /**
      * POST /api/auth/register
-     * ユーザー登録処理
+     * 新しいユーザーを登録します。
+     *
+     * @param request 登録するユーザーの情報を含むリクエストボディ
+     * @return 登録成功時には、認証トークンを含むレスポンスを返します。
      */
     @PostMapping("/register")
     fun register(@RequestBody request: RegisterRequest): ResponseEntity<AuthResponse> {
-        return ResponseEntity.ok(authUseCase.register(request))
+        val authResponse = registerUseCase.execute(request)
+        return ResponseEntity.ok(authResponse)
     }
 
     /**
      * POST /api/auth/login
-     * ログイン処理
+     * ユーザーのログイン処理を行います。
+     *
+     * @param request ログイン情報（メールアドレスとパスワード）を含むリクエストボディ
+     * @return ログイン成功時には、認証トークンを含むレスポンスを返します。
      */
     @PostMapping("/login")
     fun login(@RequestBody request: LoginRequest): ResponseEntity<AuthResponse> {
-        return ResponseEntity.ok(authUseCase.login(request))
+        val authResponse = loginUseCase.execute(request)
+        return ResponseEntity.ok(authResponse)
     }
 }

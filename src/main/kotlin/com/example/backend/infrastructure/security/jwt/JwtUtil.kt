@@ -82,4 +82,16 @@ class JwtUtil {
             .build()
         return parser.parseClaimsJws(token).body.expiration.before(Date())
     }
+
+    /**
+     * トークンから有効期限を取得する
+     * @param token JWTトークン
+     * @return 有効期限
+     */
+    fun getExpirationDate(token: String): Date {
+        val parser = Jwts.parserBuilder()
+            .setSigningKey(key)
+            .build()
+        return parser.parseClaimsJws(token).body.expiration
+    }
 }

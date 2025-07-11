@@ -45,6 +45,6 @@ class RegisterUseCase(
 
         // JWTトークンを生成して返却
         val token = jwtUtil.generateToken(saved.email)
-        return AuthResponse(token)
+        return AuthResponse(token, isProfileCreated = false)
     }
 }

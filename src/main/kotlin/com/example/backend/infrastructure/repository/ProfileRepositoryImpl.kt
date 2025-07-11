@@ -10,7 +10,9 @@ import org.springframework.stereotype.Repository
  * プロフィールリポジトリのJPA実装
  */
 @Repository
-interface JpaProfileRepository : JpaRepository<ProfileEntity, Long>
+interface JpaProfileRepository : JpaRepository<ProfileEntity, Long> {
+    fun findByUserId(userId: Long): ProfileEntity?
+}
 
 /**
  * プロフィールリポジトリポートの実装クラス
@@ -32,6 +34,16 @@ class ProfileRepositoryImpl(
         val profileEntity = profile.toEntity()
         val savedProfileEntity = jpaProfileRepository.save(profileEntity)
         return savedProfileEntity.toModel()
+    }
+
+    /**
+     * ユーザーIDでプロフィールを検索する
+     *
+     * @param userId ユーザーID
+     * @return 見つかったプロフィール、なければnull
+     */
+    override fun findByUserId(userId: Long): Profile? {
+        return jpaProfileRepository.findByUserId(userId)?.toModel()
     }
 
     /**

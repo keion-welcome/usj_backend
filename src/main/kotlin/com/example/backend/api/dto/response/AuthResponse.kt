@@ -4,5 +4,6 @@ package com.example.backend.api.dto.response
  * JWTトークンをクライアントに返します。
  */
 data class AuthResponse(
-    val token: String
+    val token: String,
+    val isProfileCreated: Boolean
 )

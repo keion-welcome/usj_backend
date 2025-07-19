@@ -1,4 +1,4 @@
-package com.example.backend.usecase.usecase
+package com.example.backend.usecase.impl
 
 import com.example.backend.api.dto.request.RegisterRequest
 import com.example.backend.api.dto.response.AuthResponse

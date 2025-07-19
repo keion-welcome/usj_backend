@@ -1,4 +1,4 @@
-package com.example.backend.usecase.usecase
+package com.example.backend.usecase.impl
 
 import com.example.backend.domain.model.InvalidatedToken
 import com.example.backend.usecase.gateway.InvalidatedTokenRepositoryPort

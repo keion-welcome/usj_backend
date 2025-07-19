@@ -18,7 +18,7 @@ data class Profile(
     val id: Long? = null,
     val userId: Long,
     val nickname: String,
-    val gender: String,
+    val gender: Gender,
     val birthdate: LocalDate,
     val area: String,
     val occupation: String,

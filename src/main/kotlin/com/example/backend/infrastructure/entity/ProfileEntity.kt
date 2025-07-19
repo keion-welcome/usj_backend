@@ -1,13 +1,15 @@
 package com.example.backend.infrastructure.entity
 
+import com.example.backend.domain.model.Gender
 import jakarta.persistence.*
+import jakarta.validation.constraints.Size
 import java.time.LocalDate
 
 /**
  * プロフィール情報を表すJPAエンティティ
  *
  * @property id プロフィールの一意なID
- * @property userId ユーザーID
+ * @property user 関連するユーザーエンティティ（1対1関係）
  * @property nickname ニックネーム
  * @property gender 性別
  * @property birthdate 生年月日
@@ -22,24 +24,31 @@ data class ProfileEntity(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,
 
-    @Column(nullable = false)
-    val userId: Long,
+    // ユーザーとの1対1リレーションシップ
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false, unique = true)
+    val user: UserEntity,
 
-    @Column(nullable = false)
+    @Size(min = 1, max = 100)
+    @Column(nullable = false, length = 100)
     val nickname: String,
 
-    @Column(nullable = false)
-    val gender: String,
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    val gender: Gender,
 
     @Column(nullable = false)
     val birthdate: LocalDate,
 
-    @Column(nullable = false)
+    @Size(min = 1, max = 100)
+    @Column(nullable = false, length = 100)
     val area: String,
 
-    @Column(nullable = false)
+    @Size(min = 1, max = 100)
+    @Column(nullable = false, length = 100)
     val occupation: String,
 
     @Column(nullable = false)
     val hasAnnualPass: Boolean
-)
+
+) : BaseEntity()

@@ -1,7 +1,8 @@
-package com.example.backend.infrastructure.repository
+package com.example.backend.infrastructure.repository.impl
 
 import com.example.backend.domain.model.User
 import com.example.backend.infrastructure.entity.UserEntity
+import com.example.backend.infrastructure.repository.jpa.JpaUserRepository
 import com.example.backend.usecase.gateway.UserRepositoryPort
 import org.springframework.stereotype.Repository
 
@@ -32,6 +33,15 @@ class UserRepositoryImpl(
      */
     override fun findByEmail(email: String): User? {
         return jpaRepository.findByEmail(email)?.let {
+            User(it.id, it.username, it.email, it.password)
+        }
+    }
+
+    /**
+     * IDでユーザーを検索
+     */
+    override fun findById(id: Long): User? {
+        return jpaRepository.findById(id).orElse(null)?.let {
             User(it.id, it.username, it.email, it.password)
         }
     }

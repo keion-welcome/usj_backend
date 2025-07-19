@@ -1,7 +1,7 @@
 package com.example.backend.infrastructure.entity
 
-
 import jakarta.persistence.*
+import jakarta.validation.constraints.*
 
 /**
  * データベース上の「users」テーブルと対応するエンティティクラス。
@@ -16,15 +16,24 @@ data class UserEntity(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0,
 
-    // ユーザー名（null不可）
-    @Column(nullable = false)
+    // ユーザー名（null不可、長さ制限）
+    @Size(min = 1, max = 50)
+    @Column(nullable = false, length = 50)
     val username: String,
 
-    // メールアドレス（null不可、重複不可）
-    @Column(nullable = false, unique = true)
+    // メールアドレス（null不可、重複不可、形式検証）
+    @Email
+    @Size(max = 255)
+    @Column(nullable = false, unique = true, length = 255)
     val email: String,
 
     // パスワード（ハッシュ化された文字列を保存）
-    @Column(nullable = false)
-    val password: String
-)
+    @Size(min = 8, max = 255)
+    @Column(nullable = false, length = 255)
+    val password: String,
+
+    // プロフィールとの1対1リレーションシップ
+    @OneToOne(mappedBy = "user", cascade = [CascadeType.ALL], orphanRemoval = true)
+    val profile: ProfileEntity? = null
+
+) : BaseEntity()

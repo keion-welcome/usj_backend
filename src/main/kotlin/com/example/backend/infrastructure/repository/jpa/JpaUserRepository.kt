@@ -1,4 +1,4 @@
-package com.example.backend.infrastructure.repository
+package com.example.backend.infrastructure.repository.jpa
 
 import com.example.backend.infrastructure.entity.UserEntity
 import org.springframework.data.jpa.repository.JpaRepository

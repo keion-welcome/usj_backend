@@ -12,11 +12,14 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: update        # 開発中は update、あとで validate や none に
+      ddl-auto: update  # 開発段階ではupdateを使用（エンティティから自動生成）
     show-sql: true
     properties:
       hibernate:
         format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+# Flywayは開発段階では不要のため削除
 
 # （任意）Actuator のエンドポイント制御
 management:

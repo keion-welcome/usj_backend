@@ -1,7 +1,7 @@
 package com.example.backend.usecase.usecase
 
 import com.example.backend.api.dto.request.RegisterRequest
-import com.example.backend.api.dto.response.AuthResponse
+import com.example.backend.api.dto.response.RegisterResponse
 import com.example.backend.api.mapper.UserMapper
 import com.example.backend.infrastructure.security.jwt.JwtUtil
 import com.example.backend.usecase.gateway.UserRepositoryPort
@@ -28,7 +28,7 @@ class RegisterUseCase(
      * @return 生成された認証トークンを含むレスポンスDTO。
      * @throws IllegalArgumentException 既にメールアドレスが登録されている場合にスローされます。
      */
-    fun execute(request: RegisterRequest): AuthResponse {
+    fun execute(request: RegisterRequest): RegisterResponse {
         // 既にメールアドレスが存在しているかチェック
         require(userRepository.findByEmail(request.email) == null) {
             "既に登録されているメールアドレスです。"
@@ -45,6 +45,6 @@ class RegisterUseCase(
 
         // JWTトークンを生成して返却
         val token = jwtUtil.generateToken(saved.email)
-        return AuthResponse(token, isProfileCreated = false)
+        return RegisterResponse(token)
     }
 }

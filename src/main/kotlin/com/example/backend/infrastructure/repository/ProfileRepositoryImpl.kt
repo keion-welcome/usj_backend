@@ -47,6 +47,16 @@ class ProfileRepositoryImpl(
     }
 
     /**
+     * プロフィールIDでプロフィールを検索する
+     *
+     * @param id プロフィールID
+     * @return 見つかったプロフィール、なければnull
+     */
+    override fun findById(id: Long): Profile? {
+        return jpaProfileRepository.findById(id).orElse(null)?.toModel()
+    }
+
+    /**
      * ProfileドメインモデルをProfileEntityに変換する
      *
      * @return ProfileEntity

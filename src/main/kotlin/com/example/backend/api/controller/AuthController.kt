@@ -3,6 +3,7 @@ package com.example.backend.api.controller
 import com.example.backend.api.dto.request.LoginRequest
 import com.example.backend.api.dto.request.RegisterRequest
 import com.example.backend.api.dto.response.AuthResponse
+import com.example.backend.api.dto.response.RegisterResponse
 import com.example.backend.usecase.usecase.LoginUseCase
 import com.example.backend.usecase.usecase.LogoutUseCase
 import com.example.backend.usecase.usecase.RegisterUseCase
@@ -37,9 +38,9 @@ class AuthController(
      * @return 登録成功時には、認証トークンを含むレスポンスを返します。
      */
     @PostMapping("/register")
-    fun register(@RequestBody request: RegisterRequest): ResponseEntity<AuthResponse> {
-        val authResponse = registerUseCase.execute(request)
-        return ResponseEntity.ok(authResponse)
+    fun register(@RequestBody request: RegisterRequest): ResponseEntity<RegisterResponse> {
+        val response = registerUseCase.execute(request)
+        return ResponseEntity.ok(response)
     }
 
     /**

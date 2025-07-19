@@ -21,4 +21,12 @@ interface ProfileRepositoryPort {
      * @return 見つかったプロフィール、なければnull
      */
     fun findByUserId(userId: Long): Profile?
+
+    /**
+     * プロフィールIDでプロフィールを検索する
+     *
+     * @param id プロフィールID
+     * @return 見つかったプロフィール、なければnull
+     */
+    fun findById(id: Long): Profile?
 }

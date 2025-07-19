@@ -1,6 +1,8 @@
 package com.example.backend.domain.model
 
 import java.time.LocalDate
+import com.example.backend.domain.model.Gender
+
 
 /**
  * プロフィール情報を表すドメインモデル
@@ -16,7 +18,7 @@ import java.time.LocalDate
  */
 data class Profile(
     val id: Long? = null,
-    val userId: Long,
+    val userId: Long? = null,
     val nickname: String,
     val gender: Gender,
     val birthdate: LocalDate,

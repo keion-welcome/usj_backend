@@ -29,8 +29,11 @@ class ProfileRepositoryImpl(
      * @return 保存されたプロフィール
      */
     override fun save(profile: Profile): Profile {
+        // userIdがnullの場合はエラー
+        val userId = profile.userId ?: throw IllegalArgumentException("User ID cannot be null")
+        
         // ユーザーエンティティ取得
-        val userEntity = jpaUserRepository.findById(profile.userId)
+        val userEntity = jpaUserRepository.findById(userId)
             .orElseThrow { IllegalArgumentException("User entity not found") }
         
         // エンティティ変換
@@ -49,7 +52,8 @@ class ProfileRepositoryImpl(
      * @param userId ユーザーID
      * @return プロフィール（存在しない場合はnull）
      */
-    override fun findByUserId(userId: Long): Profile? {
+    override fun findByUserId(userId: Long?): Profile? {
+        if (userId == null) return null
         return jpaProfileRepository.findByUserId(userId)?.let { profileMapper.toModel(it) }
     }
 }

@@ -26,7 +26,7 @@ class LoginUseCase(
         
         // JWTトークンを生成
         val token = authenticationPort.generateToken(email)
-        
+
         // 生成したトークンをレスポンスとして返却
         return AuthResponse(token)
     }

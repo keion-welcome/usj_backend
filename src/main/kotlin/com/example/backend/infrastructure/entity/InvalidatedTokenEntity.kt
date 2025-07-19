@@ -16,12 +16,32 @@ import java.time.Instant
         Index(name = "idx_invalidated_tokens_expiry", columnList = "expiryDate")
     ]
 )
-data class InvalidatedTokenEntity(
+class InvalidatedTokenEntity(
     @Id
     @Column(length = 1000)  // JWTトークンは長いため
-    val token: String,
+    var token: String,
     
     @Column(nullable = false)
-    val expiryDate: Instant
+    var expiryDate: Instant
 
-) : BaseEntity()
+) : BaseEntity() {
+    
+    // JPA用のデフォルトコンストラクタ
+    constructor() : this("", Instant.now())
+    
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+        
+        other as InvalidatedTokenEntity
+        return token == other.token
+    }
+    
+    override fun hashCode(): Int {
+        return token.hashCode()
+    }
+    
+    override fun toString(): String {
+        return "InvalidatedTokenEntity(token='$token', expiryDate=$expiryDate)"
+    }
+}

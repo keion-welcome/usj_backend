@@ -19,36 +19,69 @@ import java.time.LocalDate
  */
 @Entity
 @Table(name = "profiles")
-data class ProfileEntity(
+class ProfileEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long? = null,
+    var id: Long? = null,
 
     // ユーザーとの1対1リレーションシップ
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false, unique = true)
-    val user: UserEntity,
+    var user: UserEntity,
 
     @Size(min = 1, max = 100)
     @Column(nullable = false, length = 100)
-    val nickname: String,
+    var nickname: String,
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
-    val gender: Gender,
+    var gender: Gender,
 
     @Column(nullable = false)
-    val birthdate: LocalDate,
+    var birthdate: LocalDate,
 
     @Size(min = 1, max = 100)
     @Column(nullable = false, length = 100)
-    val area: String,
+    var area: String,
 
     @Size(min = 1, max = 100)
     @Column(nullable = false, length = 100)
-    val occupation: String,
+    var occupation: String,
 
     @Column(nullable = false)
-    val hasAnnualPass: Boolean
+    var hasAnnualPass: Boolean
 
-) : BaseEntity()
+) : BaseEntity() {
+    
+    // JPA用のデフォルトコンストラクタ
+    constructor() : this(
+        id = null,
+        user = UserEntity(
+            username = "",
+            email = "",
+            password = ""
+        ),
+        nickname = "",
+        gender = Gender.PREFER_NOT_TO_SAY,
+        birthdate = LocalDate.now(),
+        area = "",
+        occupation = "",
+        hasAnnualPass = false
+    )
+    
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+        
+        other as ProfileEntity
+        return id == other.id
+    }
+    
+    override fun hashCode(): Int {
+        return id?.hashCode() ?: 0
+    }
+    
+    override fun toString(): String {
+        return "ProfileEntity(id=$id, nickname='$nickname', gender=$gender)"
+    }
+}

@@ -25,14 +25,17 @@ class CreateProfileUseCase(
      * @throws IllegalArgumentException ユーザーが存在しない場合
      */
     fun createProfile(profile: Profile): Profile {
+        // userIdがnullの場合はエラー
+        val userId = profile.userId ?: throw IllegalArgumentException("User ID cannot be null")
+        
         // ビジネスロジック：ユーザー存在確認
-        userRepositoryPort.findById(profile.userId)
-            ?: throw IllegalArgumentException("User with id ${profile.userId} not found")
+        userRepositoryPort.findById(userId)
+            ?: throw IllegalArgumentException("User with id $userId not found")
         
         // ビジネスロジック：プロフィール重複確認
-        val existingProfile = profileRepositoryPort.findByUserId(profile.userId)
+        val existingProfile = profileRepositoryPort.findByUserId(userId)
         if (existingProfile != null) {
-            throw IllegalArgumentException("Profile for user ${profile.userId} already exists")
+            throw IllegalArgumentException("Profile for user $userId already exists")
         }
         
         // データアクセス処理

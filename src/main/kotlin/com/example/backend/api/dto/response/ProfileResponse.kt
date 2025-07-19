@@ -16,7 +16,7 @@ import java.time.LocalDate
  */
 data class ProfileResponse(
     val id: Long?,
-    val userId: Long,
+    val userId: Long?,
     val nickname: String,
     val gender: String,
     val birthdate: LocalDate,

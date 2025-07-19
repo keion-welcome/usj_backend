@@ -2,6 +2,7 @@ package com.example.backend.api.mapper
 
 import com.example.backend.api.dto.request.CreateProfileRequest
 import com.example.backend.api.dto.response.ProfileResponse
+import com.example.backend.domain.model.Gender
 import com.example.backend.domain.model.Profile
 
 /**
@@ -19,7 +20,7 @@ object ProfileMapper {
         return Profile(
             userId = request.userId,
             nickname = request.nickname,
-            gender = request.gender,
+            gender = Gender.valueOf(request.gender.uppercase()),
             birthdate = request.birthdate,
             area = request.area,
             occupation = request.occupation,
@@ -38,7 +39,7 @@ object ProfileMapper {
             id = model.id,
             userId = model.userId,
             nickname = model.nickname,
-            gender = model.gender,
+            gender = model.gender.name.lowercase(),
             birthdate = model.birthdate,
             area = model.area,
             occupation = model.occupation,

@@ -3,9 +3,9 @@ package com.example.backend.api.controller
 import com.example.backend.api.dto.request.LoginRequest
 import com.example.backend.api.dto.request.RegisterRequest
 import com.example.backend.api.dto.response.AuthResponse
-import com.example.backend.usecase.usecase.LoginUseCase
-import com.example.backend.usecase.usecase.LogoutUseCase
-import com.example.backend.usecase.usecase.RegisterUseCase
+import com.example.backend.usecase.impl.LoginUseCase
+import com.example.backend.usecase.impl.LogoutUseCase
+import com.example.backend.usecase.impl.RegisterUseCase
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody

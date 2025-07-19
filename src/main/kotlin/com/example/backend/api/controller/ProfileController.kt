@@ -3,7 +3,7 @@ package com.example.backend.api.controller
 import com.example.backend.api.dto.request.CreateProfileRequest
 import com.example.backend.api.dto.response.ProfileResponse
 import com.example.backend.api.mapper.ProfileMapper
-import com.example.backend.usecase.usecase.CreateProfileUseCase
+import com.example.backend.usecase.impl.CreateProfileUseCase
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping

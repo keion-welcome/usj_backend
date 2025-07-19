@@ -1,8 +1,4 @@
-# デフォルトプロファイル設定
 spring:
-  profiles:
-    active: dev  # デフォルトで開発環境プロファイルを使用
-
   security:
     user:
       name: admin
@@ -16,14 +12,17 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: update  # 開発段階ではupdateを使用（エンティティから自動生成）
+      ddl-auto: create  # 開発環境ではcreateを使用（テーブルを毎回再作成）
     show-sql: true
     properties:
       hibernate:
         format_sql: true
         dialect: org.hibernate.dialect.PostgreSQLDialect
+    defer-datasource-initialization: true  # JPAのテーブル作成後にdata.sqlを実行
 
-# Flywayは開発段階では不要のため削除
+  sql:
+    init:
+      mode: always  # アプリ起動時にdata.sqlを実行
 
 # （任意）Actuator のエンドポイント制御
 management:
@@ -35,6 +34,6 @@ management:
 # Springdoc OpenAPI の設定
 springdoc:
   swagger-ui:
-    path: /swagger-ui.html    # もしくは /swagger-ui/index.html
+    path: /swagger-ui.html
   api-docs:
-    path: /v3/api-docs
+    path: /v3/api-docs 

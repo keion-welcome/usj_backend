@@ -26,7 +26,7 @@ class CreateProfileUseCase(
      */
     fun createProfile(profile: Profile): Profile {
         // ビジネスロジック：ユーザー存在確認
-        val user = userRepositoryPort.findById(profile.userId)
+        userRepositoryPort.findById(profile.userId)
             ?: throw IllegalArgumentException("User with id ${profile.userId} not found")
         
         // ビジネスロジック：プロフィール重複確認

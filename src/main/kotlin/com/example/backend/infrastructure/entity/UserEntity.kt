@@ -19,7 +19,7 @@ class UserEntity(
 
     // 外部識別子（API用、UUID）
     @Column(nullable = false, unique = true, length = 36)
-    var userId: String? = null,
+    var userId: String = UUID.randomUUID().toString(),
 
     // ユーザー名（null不可、長さ制限）
     @Size(min = 1, max = 50)
@@ -43,18 +43,10 @@ class UserEntity(
 
 ) : BaseEntity() {
     
-    @PrePersist
-    override fun prePersist() {
-        super.prePersist()  // 親クラスのprePersistを呼び出し
-        if (userId == null) {
-            userId = UUID.randomUUID().toString()
-        }
-    }
-    
     // JPA用のデフォルトコンストラクタ
     constructor() : this(
         id = null,
-        userId = null,
+        userId = UUID.randomUUID().toString(), // デフォルトコンストラクタでもUUIDを生成
         username = "",
         email = "",
         password = "",

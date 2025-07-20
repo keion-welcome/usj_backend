@@ -19,8 +19,8 @@ class JwtUtil {
     // JWTの署名アルゴリズム（HMAC-SHA256）
     private val algorithm = SignatureAlgorithm.HS256
 
-    // JWTの有効期限（10時間）
-    private val expirationTimeMs: Long = 1000 * 60 * 60 * 10
+    // JWTの有効期限（16時間）
+    private val expirationTimeMs: Long = 1000 * 60 * 60 * 16
 
     // 🔑 文字列キーをKey型に変換
     private val key: Key = SecretKeySpec(secret.toByteArray(Charsets.UTF_8), algorithm.jcaName)

@@ -9,15 +9,15 @@ interface AuthenticationPort {
      *
      * @param email メールアドレス
      * @param password パスワード
-     * @return 認証されたユーザーのメールアドレス
+     * @return 認証されたユーザーのuserId（UUID）
      */
     fun authenticate(email: String, password: String): String
     
     /**
      * JWTトークンを生成する
      *
-     * @param email メールアドレス
+     * @param userId ユーザーID（UUID）
      * @return 生成されたJWTトークン
      */
-    fun generateToken(email: String): String
+    fun generateToken(userId: String): String
 } 

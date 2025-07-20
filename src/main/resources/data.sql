@@ -2,10 +2,10 @@
 -- アプリケーション起動時に自動実行される
 
 -- テストユーザーの挿入
-INSERT INTO users (username, email, password, created_at, updated_at) VALUES
-('testuser1', 'test1@example.com', '$2a$10$TGiQfIiMCx2OcJi6nM23jupcWlDSGCAvW6vOFwpCwZJU/9jjkTF5u', NOW(), NOW()),
-('testuser2', 'test2@example.com', '$2a$10$TGiQfIiMCx2OcJi6nM23jupcWlDSGCAvW6vOFwpCwZJU/9jjkTF5u', NOW(), NOW()),
-('admin', 'admin@example.com', '$2a$10$TGiQfIiMCx2OcJi6nM23jupcWlDSGCAvW6vOFwpCwZJU/9jjkTF5u', NOW(), NOW());
+INSERT INTO users (username, email, password, user_id, created_at, updated_at) VALUES
+('testuser1', 'test1@example.com', '$2a$10$TGiQfIiMCx2OcJi6nM23jupcWlDSGCAvW6vOFwpCwZJU/9jjkTF5u', gen_random_uuid(), NOW(), NOW()),
+('testuser2', 'test2@example.com', '$2a$10$TGiQfIiMCx2OcJi6nM23jupcWlDSGCAvW6vOFwpCwZJU/9jjkTF5u', gen_random_uuid(), NOW(), NOW()),
+('admin', 'admin@example.com', '$2a$10$TGiQfIiMCx2OcJi6nM23jupcWlDSGCAvW6vOFwpCwZJU/9jjkTF5u', gen_random_uuid(), NOW(), NOW());
 
 -- テストプロフィールの挿入
 INSERT INTO profiles (user_id, nickname, gender, birthdate, area, occupation, has_annual_pass, created_at, updated_at) VALUES

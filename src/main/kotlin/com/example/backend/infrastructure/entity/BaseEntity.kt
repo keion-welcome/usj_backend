@@ -19,7 +19,7 @@ abstract class BaseEntity {
         protected set
 
     @PrePersist
-    fun prePersist() {
+    open fun prePersist() {
         val now = LocalDateTime.now()
         createdAt = now
         updatedAt = now

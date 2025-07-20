@@ -44,7 +44,7 @@ class RegisterUseCase(
         val saved = userRepository.save(user)
 
         // JWTトークンを生成して返却
-        val token = jwtUtil.generateToken(saved.email)
+        val token = jwtUtil.generateToken(saved.userId!!)
         return AuthResponse(token)
     }
 }

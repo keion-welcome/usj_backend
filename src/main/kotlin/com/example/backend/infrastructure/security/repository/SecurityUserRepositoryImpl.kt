@@ -21,6 +21,23 @@ class SecurityUserRepositoryImpl(
     override fun findByEmail(email: String): SecurityUser? {
         return userRepositoryPort.findByEmail(email)?.let { user ->
             SecurityUser(
+                userId = user.userId ?: "",
+                email = user.email,
+                password = user.password
+            )
+        }
+    }
+    
+    /**
+     * ユーザーID（UUID）でユーザーを検索する
+     *
+     * @param userId ユーザーID（UUID）
+     * @return セキュリティ用ユーザー情報（存在しない場合はnull）
+     */
+    override fun findByUserId(userId: String): SecurityUser? {
+        return userRepositoryPort.findByUserId(userId)?.let { user ->
+            SecurityUser(
+                userId = user.userId ?: "",
                 email = user.email,
                 password = user.password
             )

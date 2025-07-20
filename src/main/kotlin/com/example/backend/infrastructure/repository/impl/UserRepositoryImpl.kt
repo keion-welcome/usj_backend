@@ -25,7 +25,7 @@ class UserRepositoryImpl(
             password = user.password
         )
         val saved = jpaRepository.save(entity)
-        return User(saved.id, saved.username, saved.email, saved.password)
+        return User(saved.id, saved.userId, saved.username, saved.email, saved.password)
     }
 
     /**
@@ -33,7 +33,7 @@ class UserRepositoryImpl(
      */
     override fun findByEmail(email: String): User? {
         return jpaRepository.findByEmail(email)?.let {
-            User(it.id, it.username, it.email, it.password)
+            User(it.id, it.userId, it.username, it.email, it.password)
         }
     }
 
@@ -42,7 +42,16 @@ class UserRepositoryImpl(
      */
     override fun findById(id: Long): User? {
         return jpaRepository.findById(id).orElse(null)?.let {
-            User(it.id, it.username, it.email, it.password)
+            User(it.id, it.userId, it.username, it.email, it.password)
+        }
+    }
+    
+    /**
+     * ユーザーID（UUID）でユーザーを検索
+     */
+    override fun findByUserId(userId: String): User? {
+        return jpaRepository.findByUserId(userId)?.let {
+            User(it.id, it.userId, it.username, it.email, it.password)
         }
     }
 }

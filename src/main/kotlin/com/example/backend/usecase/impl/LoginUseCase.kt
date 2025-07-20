@@ -22,10 +22,10 @@ class LoginUseCase(
      */
     fun execute(request: LoginRequest): AuthResponse {
         // 認証処理を実行
-        val email = authenticationPort.authenticate(request.email, request.password)
+        val userId = authenticationPort.authenticate(request.email, request.password)
         
         // JWTトークンを生成
-        val token = authenticationPort.generateToken(email)
+        val token = authenticationPort.generateToken(userId)
 
         // 生成したトークンをレスポンスとして返却
         return AuthResponse(token)

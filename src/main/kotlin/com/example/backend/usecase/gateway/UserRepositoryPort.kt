@@ -29,4 +29,12 @@ interface UserRepositoryPort {
      * @return ユーザー（存在しない場合はnull）
      */
     fun findById(id: Long): User?
+    
+    /**
+     * ユーザーID（UUID）でユーザーを検索する
+     *
+     * @param userId ユーザーID（UUID）
+     * @return ユーザー（存在しない場合はnull）
+     */
+    fun findByUserId(userId: String): User?
 }

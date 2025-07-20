@@ -2,6 +2,7 @@ package com.example.backend.infrastructure.entity
 
 import jakarta.persistence.*
 import jakarta.validation.constraints.*
+import java.util.UUID
 
 /**
  * データベース上の「users」テーブルと対応するエンティティクラス。
@@ -11,10 +12,14 @@ import jakarta.validation.constraints.*
 @Table(name = "users")
 class UserEntity(
 
-    // 主キー（自動採番）
+    // 主キー（内部用、AUTO_INCREMENT）
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null,
+
+    // 外部識別子（API用、UUID）
+    @Column(nullable = false, unique = true, length = 36)
+    var userId: String? = null,
 
     // ユーザー名（null不可、長さ制限）
     @Size(min = 1, max = 50)
@@ -38,9 +43,18 @@ class UserEntity(
 
 ) : BaseEntity() {
     
+    @PrePersist
+    override fun prePersist() {
+        super.prePersist()  // 親クラスのprePersistを呼び出し
+        if (userId == null) {
+            userId = UUID.randomUUID().toString()
+        }
+    }
+    
     // JPA用のデフォルトコンストラクタ
     constructor() : this(
         id = null,
+        userId = null,
         username = "",
         email = "",
         password = "",

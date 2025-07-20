@@ -2,6 +2,7 @@ package com.example.backend.infrastructure.security.service
 
 import com.example.backend.infrastructure.security.jwt.JwtUtil
 import com.example.backend.usecase.gateway.AuthenticationPort
+import com.example.backend.usecase.gateway.UserRepositoryPort
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.context.SecurityContextHolder
@@ -13,7 +14,8 @@ import org.springframework.stereotype.Service
 @Service
 class AuthenticationServiceImpl(
     private val authenticationManager: AuthenticationManager,
-    private val jwtUtil: JwtUtil
+    private val jwtUtil: JwtUtil,
+    private val userRepository: UserRepositoryPort
 ) : AuthenticationPort {
 
     /**
@@ -21,25 +23,30 @@ class AuthenticationServiceImpl(
      *
      * @param email メールアドレス
      * @param password パスワード
-     * @return 認証されたユーザーのメールアドレス
+     * @return 認証されたユーザーのuserId（UUID）
      */
     override fun authenticate(email: String, password: String): String {
+        // まずemailでユーザーを検索してuserIdを取得
+        val user = userRepository.findByEmail(email)
+            ?: throw IllegalArgumentException("Invalid credentials")
+        
+        // userIdを使って認証
         val authentication = authenticationManager.authenticate(
-            UsernamePasswordAuthenticationToken(email, password)
+            UsernamePasswordAuthenticationToken(user.userId, password)
         )
         
         SecurityContextHolder.getContext().authentication = authentication
         
-        return email
+        return user.userId!!
     }
 
     /**
      * JWTトークンを生成する
      *
-     * @param email メールアドレス
+     * @param userId ユーザーID（UUID）
      * @return 生成されたJWTトークン
      */
-    override fun generateToken(email: String): String {
-        return jwtUtil.generateToken(email)
+    override fun generateToken(userId: String): String {
+        return jwtUtil.generateToken(userId)
     }
 } 

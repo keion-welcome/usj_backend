@@ -35,6 +35,9 @@ management:
 # Springdoc OpenAPI の設定
 springdoc:
   swagger-ui:
-    path: /swagger-ui.html    # もしくは /swagger-ui/index.html
+    path: /swagger-ui.html
   api-docs:
     path: /v3/api-docs
+    enabled: true
+  default-produces-media-type: application/json
+  default-consumes-media-type: application/json

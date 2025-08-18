@@ -3,31 +3,35 @@ package com.example.backend.usecase.impl
 import com.example.backend.api.dto.request.LoginRequest
 import com.example.backend.api.dto.response.AuthResponse
 import com.example.backend.usecase.gateway.AuthenticationPort
+import com.example.backend.usecase.gateway.UserRepositoryPort
 import org.springframework.stereotype.Service
 
 /**
- * ユーザーログインに関するユースケースを実装するクラス。
+ * ログイン機能を実装するユースケースクラス
  *
- * @property authenticationPort 認証処理を行うポート
+ * @property authenticationPort 認証処理を担うポート
+ * @property userRepository ユーザー情報へのアクセスを担うリポジトリポート
  */
 @Service
 class LoginUseCase(
-    private val authenticationPort: AuthenticationPort
+    private val authenticationPort: AuthenticationPort,
+    private val userRepository: UserRepositoryPort
 ) {
     /**
-     * ユーザーを認証し、認証トークンを返却します。
+     * ログイン処理を実行する
      *
-     * @param request ログイン情報を含むリクエストDTO。
-     * @return 生成された認証トークンを含むレスポンスDTO。
+     * @param request ログイン情報（メールアドレスとパスワード）
+     * @return 認証トークンを含むレスポンス
      */
     fun execute(request: LoginRequest): AuthResponse {
-        // 認証処理を実行
-        val userId = authenticationPort.authenticate(request.email, request.password)
-        
-        // JWTトークンを生成
-        val token = authenticationPort.generateToken(userId)
+        // ユーザーを認証し、メールアドレスを取得
+        val email = authenticationPort.authenticate(request.email, request.password)
 
-        // 生成したトークンをレスポンスとして返却
-        return AuthResponse(token)
+        // メールアドレスを元にJWTトークンを生成
+        val token = authenticationPort.generateToken(email)
+
+        return AuthResponse(
+            token = token
+        )
     }
 }

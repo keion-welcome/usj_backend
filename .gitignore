@@ -38,3 +38,10 @@ out/
 
 ### Kotlin ###
 .kotlin
+
+### Claude and AI Development Tools ###
+.claude/
+.gemini/
+
+### Test Directories ###
+src/test/websocket-test/

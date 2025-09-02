@@ -41,3 +41,7 @@ springdoc:
     enabled: true
   default-produces-media-type: application/json
   default-consumes-media-type: application/json
+# JDBCの設定
+app:
+  repository:
+    implementation: jdbc  # jdbc

@@ -1,25 +1,25 @@
 package com.example.backend.infrastructure.repository.impl
 
 import com.example.backend.domain.model.Profile
-import com.example.backend.infrastructure.entity.UserEntity
-import com.example.backend.infrastructure.mapper.ProfileMapper
-import com.example.backend.infrastructure.repository.jpa.JpaProfileRepository
-import com.example.backend.infrastructure.repository.jpa.JpaUserRepository
+import com.example.backend.domain.model.Gender
 import com.example.backend.usecase.gateway.ProfileRepositoryPort
+import org.springframework.jdbc.core.JdbcTemplate
+import org.springframework.jdbc.core.RowMapper
+import org.springframework.jdbc.support.GeneratedKeyHolder
 import org.springframework.stereotype.Repository
+import java.sql.PreparedStatement
+import java.sql.ResultSet
+import java.sql.Statement
+import java.time.LocalDate
 
 /**
- * プロフィールリポジトリポートの実装クラス
+ * プロフィールリポジトリポートのJDBC実装クラス
  *
- * @property jpaProfileRepository JPAプロフィールリポジトリ
- * @property jpaUserRepository JPAユーザーリポジトリ
- * @property profileMapper プロフィールマッパー
+ * @property jdbcTemplate JDBCテンプレート
  */
 @Repository
 class ProfileRepositoryImpl(
-    private val jpaProfileRepository: JpaProfileRepository,
-    private val jpaUserRepository: JpaUserRepository,
-    private val profileMapper: ProfileMapper
+    private val jdbcTemplate: JdbcTemplate
 ) : ProfileRepositoryPort {
 
     /**
@@ -29,21 +29,60 @@ class ProfileRepositoryImpl(
      * @return 保存されたプロフィール
      */
     override fun save(profile: Profile): Profile {
-        // userIdがnullの場合はエラー
         val userId = profile.userId ?: throw IllegalArgumentException("User ID cannot be null")
         
-        // ユーザーエンティティ取得
-        val userEntity = jpaUserRepository.findById(userId)
-            .orElseThrow { IllegalArgumentException("User entity not found") }
+        // ユーザーが存在するかチェック
+        val userExists = jdbcTemplate.queryForObject(
+            "SELECT COUNT(*) FROM users WHERE id = ?",
+            Int::class.java,
+            userId
+        ) > 0
         
-        // エンティティ変換
-        val profileEntity = profileMapper.toEntity(profile, userEntity)
+        if (!userExists) {
+            throw IllegalArgumentException("User entity not found")
+        }
         
-        // 保存
-        val savedProfileEntity = jpaProfileRepository.save(profileEntity)
-        
-        // モデル変換して返却
-        return profileMapper.toModel(savedProfileEntity)
+        return if (profile.id == null) {
+            // 新規作成
+            val keyHolder = GeneratedKeyHolder()
+            jdbcTemplate.update({ connection ->
+                val ps = connection.prepareStatement(
+                    """
+                    INSERT INTO profiles (user_id, nickname, gender, birthdate, area, occupation, has_annual_pass)
+                    VALUES (?, ?, ?, ?, ?, ?, ?)
+                    """.trimIndent(),
+                    Statement.RETURN_GENERATED_KEYS
+                )
+                ps.setLong(1, userId)
+                ps.setString(2, profile.nickname)
+                ps.setString(3, profile.gender.name)
+                ps.setDate(4, java.sql.Date.valueOf(profile.birthdate))
+                ps.setString(5, profile.area)
+                ps.setString(6, profile.occupation)
+                ps.setBoolean(7, profile.hasAnnualPass)
+                ps
+            }, keyHolder)
+            
+            val generatedId = keyHolder.key?.toLong() ?: throw RuntimeException("Failed to get generated ID")
+            profile.copy(id = generatedId)
+        } else {
+            // 更新
+            jdbcTemplate.update(
+                """
+                UPDATE profiles 
+                SET nickname = ?, gender = ?, birthdate = ?, area = ?, occupation = ?, has_annual_pass = ?
+                WHERE id = ?
+                """.trimIndent(),
+                profile.nickname,
+                profile.gender.name,
+                java.sql.Date.valueOf(profile.birthdate),
+                profile.area,
+                profile.occupation,
+                profile.hasAnnualPass,
+                profile.id
+            )
+            profile
+        }
     }
 
     /**
@@ -54,6 +93,32 @@ class ProfileRepositoryImpl(
      */
     override fun findByUserId(userId: Long?): Profile? {
         if (userId == null) return null
-        return jpaProfileRepository.findByUserId(userId)?.let { profileMapper.toModel(it) }
+        
+        return try {
+            jdbcTemplate.queryForObject(
+                """
+                SELECT id, user_id, nickname, gender, birthdate, area, occupation, has_annual_pass
+                FROM profiles
+                WHERE user_id = ?
+                """.trimIndent(),
+                profileRowMapper,
+                userId
+            )
+        } catch (e: Exception) {
+            null
+        }
+    }
+
+    private val profileRowMapper = RowMapper<Profile> { rs: ResultSet, _: Int ->
+        Profile(
+            id = rs.getLong("id"),
+            userId = rs.getLong("user_id"),
+            nickname = rs.getString("nickname"),
+            gender = Gender.valueOf(rs.getString("gender")),
+            birthdate = rs.getDate("birthdate").toLocalDate(),
+            area = rs.getString("area"),
+            occupation = rs.getString("occupation"),
+            hasAnnualPass = rs.getBoolean("has_annual_pass")
+        )
     }
 }

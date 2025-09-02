@@ -1,9 +1,11 @@
 package com.example.backend.api.controller
 
 import com.example.backend.api.dto.request.CreateProfileRequest
+import com.example.backend.api.dto.request.UpdateProfileRequest
 import com.example.backend.api.dto.response.ProfileResponse
 import com.example.backend.api.mapper.ProfileMapper
 import com.example.backend.usecase.impl.CreateProfileUseCase
+import com.example.backend.usecase.impl.UpdateProfileUseCase
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.media.Content
@@ -14,6 +16,7 @@ import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
@@ -26,7 +29,10 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping("/api/profiles")
 @Tag(name = "プロフィール", description = "ユーザープロフィール関連のAPIエンドポイント")
-class ProfileController(private val createProfileUseCase: CreateProfileUseCase) {
+class ProfileController(
+    private val createProfileUseCase: CreateProfileUseCase,
+    private val updateProfileUseCase: UpdateProfileUseCase
+) {
 
     /**
      * プロフィールを作成する
@@ -46,5 +52,25 @@ class ProfileController(private val createProfileUseCase: CreateProfileUseCase) 
         val createdProfile = createProfileUseCase.createProfile(profile)
         val response = ProfileMapper.toResponse(createdProfile)
         return ResponseEntity(response, HttpStatus.CREATED)
+    }
+
+    /**
+     * プロフィールを更新する
+     *
+     * @param request プロフィール更新リクエスト
+     * @return 更新されたプロフィールのレスポンス
+     */
+    @PutMapping
+    @Operation(
+        summary = "プロフィール更新",
+        description = "ユーザーのプロフィール情報を更新します。"
+    )
+    fun updateProfile(
+        @RequestBody request: UpdateProfileRequest
+    ): ResponseEntity<ProfileResponse> {
+        val profile = ProfileMapper.toModel(request)
+        val updatedProfile = updateProfileUseCase.updateProfile(profile)
+        val response = ProfileMapper.toResponse(updatedProfile)
+        return ResponseEntity(response, HttpStatus.OK)
     }
 }

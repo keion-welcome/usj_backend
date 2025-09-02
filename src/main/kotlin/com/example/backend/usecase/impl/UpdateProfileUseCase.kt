@@ -6,33 +6,33 @@ import com.example.backend.usecase.gateway.UserRepositoryPort
 import org.springframework.stereotype.Service
 
 /**
- * プロフィール作成ユースケース
+ * プロフィール更新ユースケース
  *
  * @property profileRepositoryPort プロフィールリポジトリのポート
  * @property userRepositoryPort ユーザーリポジトリのポート
  */
 @Service
-class CreateProfileUseCase(
+class UpdateProfileUseCase(
     private val profileRepositoryPort: ProfileRepositoryPort,
     private val userRepositoryPort: UserRepositoryPort
 ) {
 
     /**
-     * プロフィールを作成する
+     * プロフィールを更新する
      *
-     * @param profile 作成するプロフィール
-     * @return 作成されたプロフィール
+     * @param profile 更新するプロフィール
+     * @return 更新されたプロフィール
      * @throws IllegalArgumentException バリデーションエラーの場合
      */
-    fun createProfile(profile: Profile): Profile {
+    fun updateProfile(profile: Profile): Profile {
         validateProfileData(profile)
         
         val existingProfile = profileRepositoryPort.findByUserId(profile.userId!!)
-        if (existingProfile != null) {
-            throw IllegalArgumentException("Profile for user ${profile.userId} already exists")
-        }
+            ?: throw IllegalArgumentException("Profile for user ${profile.userId} not found")
         
-        return profileRepositoryPort.save(profile)
+        val updatedProfile = profile.copy(id = existingProfile.id)
+        
+        return profileRepositoryPort.save(updatedProfile)
     }
 
     /**

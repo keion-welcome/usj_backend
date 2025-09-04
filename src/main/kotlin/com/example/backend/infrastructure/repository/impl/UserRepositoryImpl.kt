@@ -23,8 +23,19 @@ class UserRepositoryImpl(
             username = user.username,
             email = user.email,
             password = user.password
+            // userIdは@PrePersistで自動生成される
         )
         val saved = jpaRepository.save(entity)
+        
+        // UserID生成の検証（デバッグ強化）
+        requireNotNull(saved.userId) { 
+            "Critical error: UserEntity.userId generation failed for user: ${saved.username}. " +
+            "This indicates a problem with @PrePersist or database constraints." 
+        }
+        require(saved.userId!!.isNotBlank()) { 
+            "Critical error: UserEntity.userId is blank for user: ${saved.username}" 
+        }
+        
         return User(saved.id, saved.userId, saved.username, saved.email, saved.password)
     }
 

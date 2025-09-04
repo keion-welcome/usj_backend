@@ -20,5 +20,5 @@ interface ProfileRepositoryPort {
      * @param userId ユーザーID
      * @return プロフィール（存在しない場合はnull）
      */
-    fun findByUserId(userId: Long?): Profile?
+    fun findByUserId(userId: String?): Profile?
 }

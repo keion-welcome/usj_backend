@@ -52,7 +52,7 @@ class ProfileRepositoryImpl(
      * @param userId ユーザーID
      * @return プロフィール（存在しない場合はnull）
      */
-    override fun findByUserId(userId: Long?): Profile? {
+    override fun findByUserId(userId: String?): Profile? {
         if (userId == null) return null
         return jpaProfileRepository.findByUserId(userId)?.let { profileMapper.toModel(it) }
     }

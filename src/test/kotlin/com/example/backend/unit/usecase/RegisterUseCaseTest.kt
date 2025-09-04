@@ -45,11 +45,10 @@ class RegisterUseCaseTest {
         )
         
         val savedUser = User(
-            id = 1L,
-            userId = "user_yamada_taro_001",
+            id = "user_yamada_taro_001",
             username = "yamada_taro",
             email = "yamada.taro@example.com",
-            password = "hashed_password"
+            passwordHash = "hashed_password"
         )
         
         val expectedToken = "jwt_token_yamada_taro_001"

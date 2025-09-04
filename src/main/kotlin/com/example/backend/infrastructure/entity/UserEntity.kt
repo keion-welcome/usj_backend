@@ -12,15 +12,11 @@ import jakarta.validation.constraints.*
 @Table(name = "users")
 class UserEntity(
 
-    // 主キー（内部用、AUTO_INCREMENT）
+    // 主キー（UUID7）- APIでも使用
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var id: Long? = null,
-
-    // 外部識別子（API用、UUID7）- 自動生成
     @GeneratedUuid7
-    @Column(nullable = false, unique = true, length = 36)
-    var userId: String? = null,
+    @Column(nullable = false, length = 36)
+    var id: String? = null,
 
     // ユーザー名（null不可、長さ制限）
     @Size(min = 1, max = 50)
@@ -34,9 +30,8 @@ class UserEntity(
     var email: String,
 
     // パスワード（ハッシュ化された文字列を保存）
-    @Size(min = 8, max = 255)
     @Column(nullable = false, length = 255)
-    var password: String,
+    var passwordHash: String,
 
     // プロフィールとの1対1リレーションシップ
     @OneToOne(mappedBy = "user", cascade = [CascadeType.ALL], orphanRemoval = true)
@@ -46,11 +41,10 @@ class UserEntity(
     
     // JPA用のデフォルトコンストラクタ
     constructor() : this(
-        id = null,
-        userId = null,  // @GeneratedUuid7で自動生成
+        id = null,  // @GeneratedUuid7で自動生成
         username = "",
         email = "",
-        password = "",
+        passwordHash = "",
         profile = null
     )
     
@@ -67,6 +61,6 @@ class UserEntity(
     }
     
     override fun toString(): String {
-        return "UserEntity(id=$id, userId='$userId', username='$username', email='$email')"
+        return "UserEntity(id=$id, username='$username', email='$email')"
     }
 }

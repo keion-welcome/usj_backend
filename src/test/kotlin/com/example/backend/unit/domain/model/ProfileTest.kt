@@ -10,7 +10,7 @@ class ProfileTest {
     fun `正常なプロフィールが作成される`() {
         val profile = Profile(
             id = 1L,
-            userId = 1L,
+            userId = "550e8400-e29b-41d4-a716-446655440001",
             nickname = "テストユーザー",
             gender = Gender.MALE,
             birthdate = LocalDate.of(1990, 1, 1),
@@ -20,7 +20,7 @@ class ProfileTest {
         )
 
         assertThat(profile.id).isEqualTo(1L)
-        assertThat(profile.userId).isEqualTo(1L)
+        assertThat(profile.userId).isEqualTo("550e8400-e29b-41d4-a716-446655440001")
         assertThat(profile.nickname).isEqualTo("テストユーザー")
         assertThat(profile.gender).isEqualTo(Gender.MALE)
         assertThat(profile.birthdate).isEqualTo(LocalDate.of(1990, 1, 1))

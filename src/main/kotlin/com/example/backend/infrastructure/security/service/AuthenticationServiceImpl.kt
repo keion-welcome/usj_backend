@@ -32,12 +32,12 @@ class AuthenticationServiceImpl(
         
         // userIdを使って認証
         val authentication = authenticationManager.authenticate(
-            UsernamePasswordAuthenticationToken(user.userId, password)
+            UsernamePasswordAuthenticationToken(user.id, password)
         )
         
         SecurityContextHolder.getContext().authentication = authentication
         
-        return user.userId!!
+        return user.id!!
     }
 
     /**

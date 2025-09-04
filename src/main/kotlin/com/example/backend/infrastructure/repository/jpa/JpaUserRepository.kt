@@ -9,7 +9,6 @@ import org.springframework.stereotype.Repository
  * 自動的に実装される。
  */
 @Repository
-interface JpaUserRepository : JpaRepository<UserEntity, Long> {
+interface JpaUserRepository : JpaRepository<UserEntity, String> {
     fun findByEmail(email: String): UserEntity?
-    fun findByUserId(userId: String): UserEntity?  
 }

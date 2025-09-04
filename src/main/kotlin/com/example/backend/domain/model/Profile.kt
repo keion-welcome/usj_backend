@@ -18,7 +18,7 @@ import com.example.backend.domain.model.Gender
  */
 data class Profile(
     val id: Long? = null,
-    val userId: Long? = null,
+    val userId: String? = null,
     val nickname: String,
     val gender: Gender,
     val birthdate: LocalDate,

@@ -43,11 +43,8 @@ class RegisterUseCase(
         // ユーザーを保存
         val saved = userRepository.save(user)
 
-        // JWTトークンを生成して返却（null安全性を確保）
-        val token = saved.userId?.let { userId ->
-            jwtUtil.generateToken(userId)
-        } ?: throw IllegalStateException("User registration failed: User ID was not generated")
-        
+        // JWTトークンを生成して返却
+        val token = jwtUtil.generateToken(saved.id!!)
         return AuthResponse(token)
     }
 }

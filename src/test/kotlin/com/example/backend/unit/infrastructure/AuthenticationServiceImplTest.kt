@@ -55,7 +55,6 @@ class AuthenticationServiceImplTest {
         // 認証対象の登録済みユーザー
         val registeredUser = User(
             id = "registered_user_001",
-            username = "registered_user",
             email = validUserEmail,
             passwordHash = "hashed_UserValidPassword123!"  // ハッシュ化済みパスワード
         )
@@ -138,7 +137,6 @@ class AuthenticationServiceImplTest {
         // Spring Security認証テスト用ユーザー
         val securityTestUser = User(
             id = "security_manager_user_001",
-            username = "security_manager_user",
             email = securityTestEmail,
             passwordHash = "hashed_SecurityManagerPass!"
         )
@@ -170,7 +168,6 @@ class AuthenticationServiceImplTest {
         // 認証失敗テスト用ユーザー（正しいユーザー情報）
         val authFailureTestUser = User(
             id = "auth_failure_user_001",
-            username = "auth_failure_user",
             email = authFailureTestEmail,
             passwordHash = "hashed_correct_password"  // 正しいハッシュ化パスワード
         )

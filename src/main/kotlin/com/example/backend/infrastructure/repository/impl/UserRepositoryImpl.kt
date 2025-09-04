@@ -21,14 +21,12 @@ class UserRepositoryImpl(
     override fun save(user: User): User {
         val entity = UserEntity(
             id = user.id,
-            username = user.username,
             email = user.email,
             passwordHash = user.passwordHash
         )
         val saved = jpaRepository.save(entity)
         return User(
             id = saved.id,
-            username = saved.username,
             email = saved.email,
             passwordHash = saved.passwordHash
         )
@@ -41,7 +39,6 @@ class UserRepositoryImpl(
         return jpaRepository.findByEmail(email)?.let {
             User(
                 id = it.id,
-                username = it.username,
                 email = it.email,
                 passwordHash = it.passwordHash
             )
@@ -55,7 +52,6 @@ class UserRepositoryImpl(
         return jpaRepository.findById(id).orElse(null)?.let {
             User(
                 id = it.id,
-                username = it.username,
                 email = it.email,
                 passwordHash = it.passwordHash
             )

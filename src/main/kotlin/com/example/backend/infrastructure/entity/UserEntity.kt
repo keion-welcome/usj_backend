@@ -18,11 +18,6 @@ class UserEntity(
     @Column(nullable = false, length = 36)
     var id: String? = null,
 
-    // ユーザー名（null不可、長さ制限）
-    @Size(min = 1, max = 50)
-    @Column(nullable = false, length = 50)
-    var username: String,
-
     // メールアドレス（null不可、重複不可、形式検証）
     @Email
     @Size(max = 255)
@@ -42,7 +37,6 @@ class UserEntity(
     // JPA用のデフォルトコンストラクタ
     constructor() : this(
         id = null,  // @GeneratedUuid7で自動生成
-        username = "",
         email = "",
         passwordHash = "",
         profile = null
@@ -61,6 +55,6 @@ class UserEntity(
     }
     
     override fun toString(): String {
-        return "UserEntity(id=$id, username='$username', email='$email')"
+        return "UserEntity(id=$id, email='$email')"
     }
 }

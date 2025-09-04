@@ -5,7 +5,6 @@ package com.example.backend.domain.model
  */
 data class User(
     val id: String? = null,             // 主キー（UUID7）
-    val username: String,               // ユーザー名
     val email: String,                  // メールアドレス（一意）
     val passwordHash: String            // ハッシュ化されたパスワード
 )

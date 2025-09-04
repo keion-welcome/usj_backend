@@ -11,6 +11,8 @@ import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.Mockito
+import org.mockito.kotlin.any
+import org.mockito.kotlin.whenever
 import com.example.backend.domain.model.User
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.assertj.core.api.Assertions.assertThat
@@ -39,14 +41,12 @@ class RegisterUseCaseTest {
     fun `should register user successfully and return auth token`() {
         // Given
         val request = RegisterRequest(
-            username = "yamada_taro",
             email = "yamada.taro@example.com",
             password = "SecurePass123!"
         )
         
         val savedUser = User(
             id = "user_yamada_taro_001",
-            username = "yamada_taro",
             email = "yamada.taro@example.com",
             passwordHash = "hashed_password"
         )
@@ -54,10 +54,10 @@ class RegisterUseCaseTest {
         val expectedToken = "jwt_token_yamada_taro_001"
         
         // モック設定
-        Mockito.`when`(userRepository.findByEmail("yamada.taro@example.com")).thenReturn(null)
-        Mockito.`when`(passwordEncoder.encode("SecurePass123!")).thenReturn("hashed_password")
-        Mockito.`when`(userRepository.save(Mockito.any(User::class.java))).thenReturn(savedUser)
-        Mockito.`when`(jwtUtil.generateToken("user_yamada_taro_001")).thenReturn(expectedToken)
+        whenever(userRepository.findByEmail("yamada.taro@example.com")).thenReturn(null)
+        whenever(passwordEncoder.encode("SecurePass123!")).thenReturn("hashed_password")
+        whenever(userRepository.save(any())).thenReturn(savedUser)
+        whenever(jwtUtil.generateToken("user_yamada_taro_001")).thenReturn(expectedToken)
 
         // When
         val result = registerUseCase.execute(request)

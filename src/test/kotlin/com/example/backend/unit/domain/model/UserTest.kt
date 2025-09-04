@@ -10,13 +10,11 @@ class UserTest {
     fun `正常なユーザーが作成される`() {
         val user = User(
             id = "550e8400-e29b-41d4-a716-446655440001",
-            username = "testuser",
             email = "test@example.com",
             passwordHash = "hashedPassword"
         )
 
         assertThat(user.id).isEqualTo("550e8400-e29b-41d4-a716-446655440001")
-        assertThat(user.username).isEqualTo("testuser")
         assertThat(user.email).isEqualTo("test@example.com")
         assertThat(user.passwordHash).isEqualTo("hashedPassword")
     }
@@ -24,13 +22,11 @@ class UserTest {
     @Test
     fun `デフォルト値でユーザーが作成される`() {
         val user = User(
-            username = "testuser",
             email = "test@example.com",
             passwordHash = "hashedPassword"
         )
 
         assertThat(user.id).isNull()
-        assertThat(user.username).isEqualTo("testuser")
         assertThat(user.email).isEqualTo("test@example.com")
         assertThat(user.passwordHash).isEqualTo("hashedPassword")
     }
@@ -39,14 +35,12 @@ class UserTest {
     fun `ユーザーが等価性を持つ`() {
         val user1 = User(
             id = "550e8400-e29b-41d4-a716-446655440001",
-            username = "testuser",
             email = "test@example.com",
             passwordHash = "hashedPassword"
         )
 
         val user2 = User(
             id = "550e8400-e29b-41d4-a716-446655440001",
-            username = "testuser",
             email = "test@example.com",
             passwordHash = "hashedPassword"
         )

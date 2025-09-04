@@ -13,6 +13,8 @@ java {
 	toolchain {
 		languageVersion = JavaLanguageVersion.of(21)
 	}
+	sourceCompatibility = JavaVersion.VERSION_21
+	targetCompatibility = JavaVersion.VERSION_21
 }
 
 repositories {
@@ -48,6 +50,9 @@ dependencies {
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("org.springframework.security:spring-security-test")
 	
+	// --- Mockito Kotlin: Kotlinサポート付きモックライブラリ ---
+	testImplementation("org.mockito.kotlin:mockito-kotlin:5.1.0")
+	
 	// --- DB-Rider: データベーステスト用ライブラリ ---
 	testImplementation("com.github.database-rider:rider-core:1.40.0")
 	testImplementation("com.github.database-rider:rider-junit5:1.40.0")
@@ -60,8 +65,13 @@ dependencies {
 }
 
 kotlin {
-	compilerOptions {
-		freeCompilerArgs.addAll("-Xjsr305=strict")
+	jvmToolchain(21)
+}
+
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+	kotlinOptions {
+		freeCompilerArgs += "-Xjsr305=strict"
+		jvmTarget = "21"
 	}
 }
 
@@ -73,4 +83,26 @@ allOpen {
 
 tasks.withType<Test> {
 	useJUnitPlatform()
+}
+
+// カスタムテストタスクの追加
+tasks.register<Test>("unitTest") {
+	description = "Run unit tests"
+	group = "verification"
+	include("**/unit/**")
+	useJUnitPlatform()
+}
+
+tasks.register<Test>("integrationTest") {
+	description = "Run integration tests"
+	group = "verification"
+	include("**/integration/**")
+	useJUnitPlatform()
+	shouldRunAfter("unitTest")
+}
+
+tasks.register<Test>("allTests") {
+	description = "Run all tests"
+	group = "verification"
+	dependsOn("unitTest", "integrationTest")
 }

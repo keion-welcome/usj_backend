@@ -1,0 +1,18 @@
+profiles:
+  - id: 1
+    user_id: 1
+    nickname: "テストユーザー1"
+    gender: "MALE"
+    birthdate: 1990-01-01
+    area: "東京都"
+    occupation: "大学生"
+    has_annual_pass: true
+  
+  - id: 2
+    user_id: 2
+    nickname: "テストユーザー2"
+    gender: "FEMALE"
+    birthdate: 1995-05-15
+    area: "大阪府"
+    occupation: "会社員"
+    has_annual_pass: false 

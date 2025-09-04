@@ -44,6 +44,13 @@ dependencies {
 	// --- テスト用のライブラリ ---
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("org.springframework.security:spring-security-test")
+	
+	// --- DB-Rider: データベーステスト用ライブラリ ---
+	testImplementation("com.github.database-rider:rider-core:1.40.0")
+	testImplementation("com.github.database-rider:rider-junit5:1.40.0")
+	
+	// --- H2: インメモリデータベース（テスト用） ---
+	testRuntimeOnly("com.h2database:h2")
 
 	// 修正点：LombokはKotlinでは一般的に不要なため削除しました。
 	// Kotlinのdata classが同様の機能を提供します。

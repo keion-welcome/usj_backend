@@ -1,8 +1,8 @@
 package com.example.backend.infrastructure.entity
 
+import com.example.backend.shared.annotation.GeneratedUuid7
 import jakarta.persistence.*
 import jakarta.validation.constraints.*
-import java.util.UUID
 
 /**
  * データベース上の「users」テーブルと対応するエンティティクラス。
@@ -17,9 +17,10 @@ class UserEntity(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null,
 
-    // 外部識別子（API用、UUID）
+    // 外部識別子（API用、UUID7）- 自動生成
+    @GeneratedUuid7
     @Column(nullable = false, unique = true, length = 36)
-    var userId: String = UUID.randomUUID().toString(),
+    var userId: String? = null,
 
     // ユーザー名（null不可、長さ制限）
     @Size(min = 1, max = 50)
@@ -46,7 +47,7 @@ class UserEntity(
     // JPA用のデフォルトコンストラクタ
     constructor() : this(
         id = null,
-        userId = UUID.randomUUID().toString(), // デフォルトコンストラクタでもUUIDを生成
+        userId = null,  // @GeneratedUuid7で自動生成
         username = "",
         email = "",
         password = "",
@@ -66,6 +67,6 @@ class UserEntity(
     }
     
     override fun toString(): String {
-        return "UserEntity(id=$id, username='$username', email='$email')"
+        return "UserEntity(id=$id, userId='$userId', username='$username', email='$email')"
     }
 }

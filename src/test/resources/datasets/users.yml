@@ -1,12 +1,8 @@
 users:
-  - id: 1
-    user_id: "550e8400-e29b-41d4-a716-446655440001"
-    username: "testuser1"
+  - id: "550e8400-e29b-41d4-a716-446655440001"
     email: "test1@example.com"
-    password: "$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iKTVEFDi"
+    password_hash: "$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iKTVEFDi"
   
-  - id: 2
-    user_id: "550e8400-e29b-41d4-a716-446655440002"
-    username: "testuser2"
+  - id: "550e8400-e29b-41d4-a716-446655440002"
     email: "test2@example.com"
-    password: "$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iKTVEFDi" 
+    password_hash: "$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iKTVEFDi" 

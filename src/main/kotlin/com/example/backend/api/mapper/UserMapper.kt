@@ -18,10 +18,8 @@ object UserMapper {
     fun toDomain(request: RegisterRequest, encodedPassword: String): User {
         return User(
             id = null,          // DB自動生成（Repository層の責任）
-            userId = null,      // DB自動生成（Repository層の責任）
-            username = request.username,
             email = request.email,
-            password = encodedPassword
+            passwordHash = encodedPassword
         )
     }
 }

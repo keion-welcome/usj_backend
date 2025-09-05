@@ -19,5 +19,5 @@ interface JpaProfileRepository : JpaRepository<ProfileEntity, Long> {
      * @return プロフィールエンティティ（存在しない場合はnull）
      */
     @Query("SELECT p FROM ProfileEntity p WHERE p.user.id = :userId")
-    fun findByUserId(@Param("userId") userId: Long?): ProfileEntity?
+    fun findByUserId(@Param("userId") userId: String?): ProfileEntity?
 } 

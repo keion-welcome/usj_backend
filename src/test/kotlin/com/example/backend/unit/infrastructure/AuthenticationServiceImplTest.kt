@@ -54,14 +54,12 @@ class AuthenticationServiceImplTest {
         
         // 認証対象の登録済みユーザー
         val registeredUser = User(
-            id = 1L,
-            userId = "registered_user_001",
-            username = "registered_user",
+            id = "registered_user_001",
             email = validUserEmail,
-            password = "hashed_UserValidPassword123!"  // ハッシュ化済みパスワード
+            passwordHash = "hashed_UserValidPassword123!"  // ハッシュ化済みパスワード
         )
         
-        val expectedAuthenticatedUserId = registeredUser.userId!!
+        val expectedAuthenticatedUserId = registeredUser.id!!
 
         // モック設定: メールアドレスでユーザー検索が成功
         given(userRepository.findByEmail(validUserEmail)).willReturn(registeredUser)
@@ -138,18 +136,16 @@ class AuthenticationServiceImplTest {
         
         // Spring Security認証テスト用ユーザー
         val securityTestUser = User(
-            id = 10L,
-            userId = "security_manager_user_001",
-            username = "security_manager_user",
+            id = "security_manager_user_001",
             email = securityTestEmail,
-            password = "hashed_SecurityManagerPass!"
+            passwordHash = "hashed_SecurityManagerPass!"
         )
 
         // モック設定: ユーザー検索が成功
         given(userRepository.findByEmail(securityTestEmail)).willReturn(securityTestUser)
         // モック設定: Spring Security認証マネージャーでの認証が成功
         given(authenticationManager.authenticate(
-            UsernamePasswordAuthenticationToken(securityTestUser.userId, securityTestPassword)
+            UsernamePasswordAuthenticationToken(securityTestUser.id, securityTestPassword)
         )).willReturn(authentication)
 
         // When - 認証処理実行（AuthenticationManager連携）
@@ -157,7 +153,7 @@ class AuthenticationServiceImplTest {
 
         // Then - AuthenticationManagerが適切に呼び出されることを検証
         verify(authenticationManager).authenticate(
-            UsernamePasswordAuthenticationToken(securityTestUser.userId, securityTestPassword)
+            UsernamePasswordAuthenticationToken(securityTestUser.id, securityTestPassword)
         )
     }
 
@@ -171,18 +167,16 @@ class AuthenticationServiceImplTest {
         
         // 認証失敗テスト用ユーザー（正しいユーザー情報）
         val authFailureTestUser = User(
-            id = 20L,
-            userId = "auth_failure_user_001",
-            username = "auth_failure_user",
+            id = "auth_failure_user_001",
             email = authFailureTestEmail,
-            password = "hashed_correct_password"  // 正しいハッシュ化パスワード
+            passwordHash = "hashed_correct_password"  // 正しいハッシュ化パスワード
         )
 
         // モック設定: ユーザー検索は成功
         given(userRepository.findByEmail(authFailureTestEmail)).willReturn(authFailureTestUser)
         // モック設定: Spring Security認証で例外発生（パスワード不一致など）
         given(authenticationManager.authenticate(
-            UsernamePasswordAuthenticationToken(authFailureTestUser.userId, wrongPassword)
+            UsernamePasswordAuthenticationToken(authFailureTestUser.id, wrongPassword)
         )).willThrow(RuntimeException("Authentication failed"))
 
         // When & Then - Spring Security認証失敗による例外発生を検証
@@ -193,7 +187,7 @@ class AuthenticationServiceImplTest {
         // 処理フローの検証
         verify(userRepository).findByEmail(authFailureTestEmail)               // ユーザー検索実行確認
         verify(authenticationManager).authenticate(                            // 認証処理実行確認
-            UsernamePasswordAuthenticationToken(authFailureTestUser.userId, wrongPassword)
+            UsernamePasswordAuthenticationToken(authFailureTestUser.id, wrongPassword)
         )
     }
 } 

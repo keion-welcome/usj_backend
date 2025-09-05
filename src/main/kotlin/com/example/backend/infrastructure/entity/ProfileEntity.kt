@@ -57,9 +57,8 @@ class ProfileEntity(
     constructor() : this(
         id = null,
         user = UserEntity(
-            username = "",
             email = "",
-            password = ""
+            passwordHash = ""
         ),
         nickname = "",
         gender = Gender.PREFER_NOT_TO_SAY,

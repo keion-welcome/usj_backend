@@ -20,23 +20,16 @@ class UserRepositoryImpl(
      */
     override fun save(user: User): User {
         val entity = UserEntity(
-            username = user.username,
+            id = user.id,
             email = user.email,
-            password = user.password
-            // userIdは@PrePersistで自動生成される
+            passwordHash = user.passwordHash
         )
         val saved = jpaRepository.save(entity)
-        
-        // UserID生成の検証（デバッグ強化）
-        requireNotNull(saved.userId) { 
-            "Critical error: UserEntity.userId generation failed for user: ${saved.username}. " +
-            "This indicates a problem with @PrePersist or database constraints." 
-        }
-        require(saved.userId!!.isNotBlank()) { 
-            "Critical error: UserEntity.userId is blank for user: ${saved.username}" 
-        }
-        
-        return User(saved.id, saved.userId, saved.username, saved.email, saved.password)
+        return User(
+            id = saved.id,
+            email = saved.email,
+            passwordHash = saved.passwordHash
+        )
     }
 
     /**
@@ -44,25 +37,24 @@ class UserRepositoryImpl(
      */
     override fun findByEmail(email: String): User? {
         return jpaRepository.findByEmail(email)?.let {
-            User(it.id, it.userId, it.username, it.email, it.password)
+            User(
+                id = it.id,
+                email = it.email,
+                passwordHash = it.passwordHash
+            )
         }
     }
 
     /**
      * IDでユーザーを検索
      */
-    override fun findById(id: Long): User? {
+    override fun findById(id: String): User? {
         return jpaRepository.findById(id).orElse(null)?.let {
-            User(it.id, it.userId, it.username, it.email, it.password)
+            User(
+                id = it.id,
+                email = it.email,
+                passwordHash = it.passwordHash
+            )
         }
     }
-    
-    /**
-     * ユーザーID（UUID）でユーザーを検索
-     */
-    override fun findByUserId(userId: String): User? {
-        return jpaRepository.findByUserId(userId)?.let {
-            User(it.id, it.userId, it.username, it.email, it.password)
-        }
-    }
-}
+} 

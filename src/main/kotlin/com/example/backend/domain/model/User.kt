@@ -4,9 +4,7 @@ package com.example.backend.domain.model
  * ビジネスルール上のユーザーの構造を表します。
  */
 data class User(
-    val id: Long? = null,           // 内部用ID（DBにより自動採番）
-    val userId: String? = null,     // 外部用ID（UUID）
-    val username: String,           // ユーザー名
-    val email: String,              // メールアドレス（一意）
-    val password: String            // ハッシュ化されたパスワード
+    val id: String? = null,             // 主キー（UUID7）
+    val email: String,                  // メールアドレス（一意）
+    val passwordHash: String            // ハッシュ化されたパスワード
 )

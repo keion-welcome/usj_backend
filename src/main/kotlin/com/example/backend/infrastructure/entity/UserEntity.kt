@@ -12,9 +12,8 @@ import jakarta.validation.constraints.*
 @Table(name = "users")
 class UserEntity(
 
-    // 主キー（UUID7）- APIでも使用
+    // 主キー（UUID）- APIでも使用
     @Id
-    @GeneratedUuid7
     @Column(nullable = false, length = 36)
     var id: String? = null,
 
@@ -36,7 +35,7 @@ class UserEntity(
     
     // JPA用のデフォルトコンストラクタ
     constructor() : this(
-        id = null,  // @GeneratedUuid7で自動生成
+        id = null,
         email = "",
         passwordHash = "",
         profile = null

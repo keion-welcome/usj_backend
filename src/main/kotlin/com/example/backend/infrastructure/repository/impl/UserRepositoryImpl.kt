@@ -4,6 +4,7 @@ import com.example.backend.domain.model.User
 import com.example.backend.infrastructure.entity.UserEntity
 import com.example.backend.infrastructure.repository.jpa.JpaUserRepository
 import com.example.backend.usecase.gateway.UserRepositoryPort
+import com.example.backend.shared.util.Uuid7Utils
 import org.springframework.stereotype.Repository
 
 /**
@@ -20,7 +21,7 @@ class UserRepositoryImpl(
      */
     override fun save(user: User): User {
         val entity = UserEntity(
-            id = user.id,
+            id = user.id ?: throw IllegalArgumentException("User.id must be provided (generated in use case)"),
             email = user.email,
             passwordHash = user.passwordHash
         )

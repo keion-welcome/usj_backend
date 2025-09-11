@@ -39,11 +39,7 @@ out/
 ### Kotlin ###
 .kotlin
 
-### gemini ###
+### AI Tools ###
 .gemini
-
-### claude ###
 .claude
-
-### test ###
 websocket-test

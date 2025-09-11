@@ -2,6 +2,8 @@ package com.example.backend.infrastructure.repository
 
 import com.example.backend.domain.model.Attraction
 import com.example.backend.infrastructure.entity.AttractionEntity
+import com.example.backend.infrastructure.repository.adapter.jpa.JpaAttractionRepository
+import com.example.backend.infrastructure.repository.adapter.jdbc.JdbcAttractionRepository
 import com.example.backend.usecase.gateway.AttractionRepositoryPort
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
@@ -13,7 +15,8 @@ import org.springframework.transaction.annotation.Transactional
  */
 @Repository
 class AttractionRepositoryImpl(
-    private val jpaAttractionRepository: JpaAttractionRepository
+    private val jpaAttractionRepository: JpaAttractionRepository,
+    private val jdbcAttractionRepository: JdbcAttractionRepository
 ) : AttractionRepositoryPort {
 
     override fun findAll(): List<Attraction> {
@@ -76,5 +79,42 @@ class AttractionRepositoryImpl(
             createdAt = this.createdAt,
             updatedAt = this.updatedAt
         )
+    }
+    
+    // === JDBC使用のメソッド ===
+    
+    /**
+     * アトラクションを作成（JDBC使用）
+     */
+    fun createAttractionWithJdbc(attraction: Attraction): Attraction {
+        return jdbcAttractionRepository.createAttraction(attraction)
+    }
+    
+    /**
+     * アトラクションを更新（JDBC使用）
+     */
+    fun updateAttractionWithJdbc(attraction: Attraction): Attraction {
+        return jdbcAttractionRepository.updateAttraction(attraction)
+    }
+    
+    /**
+     * アトラクションを削除（JDBC使用）
+     */
+    fun deleteAttractionWithJdbc(id: Long): Boolean {
+        return jdbcAttractionRepository.deleteAttraction(id)
+    }
+    
+    /**
+     * 名前で検索（JDBC使用）
+     */
+    fun findByNameWithJdbc(name: String): Attraction? {
+        return jdbcAttractionRepository.findByName(name)
+    }
+    
+    /**
+     * 名前の部分一致検索（JDBC使用）
+     */
+    fun searchByNameWithJdbc(namePattern: String): List<Attraction> {
+        return jdbcAttractionRepository.searchByName(namePattern)
     }
 }

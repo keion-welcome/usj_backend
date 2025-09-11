@@ -2,8 +2,8 @@ package com.example.backend.infrastructure.repository.impl
 
 import com.example.backend.domain.model.User
 import com.example.backend.infrastructure.entity.UserEntity
-import com.example.backend.infrastructure.repository.jpa.JpaUserRepository
-import com.example.backend.infrastructure.repository.jdbc.JdbcUserRepository
+import com.example.backend.infrastructure.repository.adapter.jpa.JpaUserRepository
+import com.example.backend.infrastructure.repository.adapter.jdbc.JdbcUserRepository
 import com.example.backend.usecase.gateway.UserRepositoryPort
 import com.example.backend.shared.util.Uuid7Utils
 import org.springframework.stereotype.Repository
@@ -80,13 +80,6 @@ class UserRepositoryImpl(
     }
     
     /**
-     * プロフィール情報付きユーザー検索（JDBC使用）
-     */
-    fun getUsersWithProfileInfo(): List<Map<String, Any?>> {
-        return jdbcRepository.findUsersWithProfiles()
-    }
-    
-    /**
      * 高速メール検索（JDBC使用）
      */
     fun fastEmailSearch(emailPattern: String): List<User> {
@@ -94,9 +87,30 @@ class UserRepositoryImpl(
     }
     
     /**
-     * プロフィール有無での検索（JDBC使用）
+     * 全ユーザーを取得（JDBC使用）
      */
-    fun findUsersWithProfileStatus(hasProfile: Boolean): List<User> {
-        return jdbcRepository.findUsersWithProfiles(hasProfile)
+    fun getAllUsers(): List<User> {
+        return jdbcRepository.findAll()
+    }
+    
+    /**
+     * ユーザーを作成（JDBC使用）
+     */
+    fun createUserWithJdbc(user: User): User {
+        return jdbcRepository.createUser(user)
+    }
+    
+    /**
+     * ユーザーを更新（JDBC使用）
+     */
+    fun updateUserWithJdbc(user: User): User {
+        return jdbcRepository.updateUser(user)
+    }
+    
+    /**
+     * ユーザーを削除（JDBC使用）
+     */
+    fun deleteUserWithJdbc(userId: String): Boolean {
+        return jdbcRepository.deleteUser(userId)
     }
 }

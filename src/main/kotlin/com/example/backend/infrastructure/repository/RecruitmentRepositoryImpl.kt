@@ -7,6 +7,7 @@ import com.example.backend.infrastructure.entity.RecruitmentEntity
 import com.example.backend.infrastructure.entity.RecruitmentParticipantEntity
 import com.example.backend.infrastructure.repository.adapter.jpa.JpaRecruitmentRepository
 import com.example.backend.infrastructure.repository.adapter.jpa.JpaRecruitmentParticipantRepository
+import com.example.backend.infrastructure.repository.adapter.jpa.JpaUserRepository
 import com.example.backend.infrastructure.repository.adapter.jdbc.JdbcRecruitmentRepository
 import com.example.backend.usecase.gateway.RecruitmentRepositoryPort
 import org.springframework.stereotype.Repository
@@ -23,6 +24,7 @@ import java.time.LocalDateTime
 class RecruitmentRepositoryImpl(
     private val jpaRecruitmentRepository: JpaRecruitmentRepository,
     private val jpaRecruitmentParticipantRepository: JpaRecruitmentParticipantRepository,
+    private val jpaUserRepository: JpaUserRepository,
     private val jdbcRecruitmentRepository: JdbcRecruitmentRepository
 ) : RecruitmentRepositoryPort {
 
@@ -109,11 +111,11 @@ class RecruitmentRepositoryImpl(
     /**
      * アトラクションに関連する募集を取得する
      *
-     * @param attractionId アトラクションID
+     * @param attractionName アトラクション名
      * @return 該当する募集のリスト
      */
-    override fun findByAttractionId(attractionId: Long): List<Recruitment> {
-        return jpaRecruitmentRepository.findByAttractionIdOrderByCreatedAtDesc(attractionId)
+    override fun findByAttractionName(attractionName: String): List<Recruitment> {
+        return jpaRecruitmentRepository.findByAttractionNameOrderByCreatedAtDesc(attractionName)
             .map { it.toModel() }
     }
 
@@ -144,12 +146,16 @@ class RecruitmentRepositoryImpl(
                 return false
             }
 
+            // ユーザーを取得
+            val user = jpaUserRepository.findById(userId).orElse(null)
+                ?: throw IllegalArgumentException("User not found")
+            
             // 参加者を追加
             val participant = RecruitmentParticipantEntity(
                 recruitmentId = recruitmentId,
                 userId = userId,
                 recruitment = recruitment,
-                user = null!!, // Lazy loading
+                user = user,
                 joinedAt = LocalDateTime.now()
             )
             jpaRecruitmentParticipantRepository.save(participant)
@@ -206,7 +212,7 @@ class RecruitmentRepositoryImpl(
             maxParticipants = this.maxParticipants,
             status = this.status.toEntityStatus(),
             expiresAt = this.expiresAt,
-            attractionId = this.attractionId,
+            attractionName = this.attractionName,
             createdAt = this.createdAt,
             updatedAt = this.updatedAt
         )
@@ -221,17 +227,8 @@ class RecruitmentRepositoryImpl(
         val participants = jpaRecruitmentParticipantRepository.findByRecruitmentId(this.id!!)
             .map { RecruitmentParticipant(it.userId, it.joinedAt) }
 
-        val attraction = this.attraction?.let {
-            com.example.backend.domain.model.Attraction(
-                id = it.id,
-                name = it.name,
-                description = it.description,
-                waitTime = it.waitTime,
-                isActive = it.isActive,
-                createdAt = it.createdAt,
-                updatedAt = it.updatedAt
-            )
-        }
+        // 注意: attractionsテーブルが削除されたため、attractionオブジェクトは常にnull
+        val attraction: com.example.backend.domain.model.Attraction? = null
 
         return Recruitment(
             id = this.id,
@@ -241,7 +238,7 @@ class RecruitmentRepositoryImpl(
             maxParticipants = this.maxParticipants,
             status = this.status.toModelStatus(),
             expiresAt = this.expiresAt,
-            attractionId = this.attractionId,
+            attractionName = this.attractionName,
             attraction = attraction,
             participants = participants,
             createdAt = this.createdAt,
@@ -299,11 +296,11 @@ class RecruitmentRepositoryImpl(
      */
     fun searchRecruitmentsWithJdbc(
         title: String? = null,
-        attractionId: Long? = null,
+        attractionName: String? = null,
         status: RecruitmentStatus? = null,
         maxParticipants: Int? = null
     ): List<Recruitment> {
-        return jdbcRecruitmentRepository.findByComplexCriteria(title, attractionId, status, maxParticipants)
+        return jdbcRecruitmentRepository.findByComplexCriteria(title, attractionName, status, maxParticipants)
     }
     
     /**

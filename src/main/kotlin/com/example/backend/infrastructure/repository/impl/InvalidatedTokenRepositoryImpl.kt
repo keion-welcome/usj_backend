@@ -2,7 +2,7 @@ package com.example.backend.infrastructure.repository.impl
 
 import com.example.backend.domain.model.InvalidatedToken
 import com.example.backend.infrastructure.entity.InvalidatedTokenEntity
-import com.example.backend.infrastructure.repository.jpa.JpaInvalidatedTokenRepository
+import com.example.backend.infrastructure.repository.adapter.jpa.JpaInvalidatedTokenRepository
 import com.example.backend.usecase.gateway.InvalidatedTokenRepositoryPort
 import org.springframework.stereotype.Repository
 
@@ -23,7 +23,7 @@ class InvalidatedTokenRepositoryImpl(
      * @return 無効化されていればtrue、そうでなければfalse
      */
     override fun exists(token: String): Boolean {
-        return jpaRepository.existsById(token)
+        return jpaRepository.existsByToken(token)
     }
 
     /**

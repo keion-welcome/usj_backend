@@ -15,7 +15,7 @@ interface CreateRecruitmentUseCase {
      * @param title 募集のタイトル
      * @param description 募集の詳細な説明
      * @param userId 募集を作成したユーザーのID
-     * @param attractionId アトラクションID
+     * @param attractionName アトラクション名
      * @param maxParticipants 最大参加者数
      * @param expiresAt 募集締切日時
      * @return 作成された募集
@@ -24,7 +24,7 @@ interface CreateRecruitmentUseCase {
         title: String, 
         description: String, 
         userId: Long,
-        attractionId: Long? = null,
+        attractionName: String? = null,
         maxParticipants: Int = 4,
         expiresAt: LocalDateTime? = null
     ): Recruitment
@@ -46,7 +46,7 @@ class CreateRecruitmentUseCaseImpl(
      * @param title 募集のタイトル
      * @param description 募集の詳細な説明
      * @param userId 募集を作成したユーザーのID
-     * @param attractionId アトラクションID
+     * @param attractionName アトラクション名
      * @param maxParticipants 最大参加者数
      * @param expiresAt 募集締切日時
      * @return 作成された募集
@@ -55,7 +55,7 @@ class CreateRecruitmentUseCaseImpl(
         title: String, 
         description: String, 
         userId: Long,
-        attractionId: Long?,
+        attractionName: String?,
         maxParticipants: Int,
         expiresAt: LocalDateTime?
     ): Recruitment {
@@ -67,7 +67,7 @@ class CreateRecruitmentUseCaseImpl(
             title = title,
             description = description,
             userId = userId,
-            attractionId = attractionId,
+            attractionName = attractionName,
             maxParticipants = maxParticipants,
             expiresAt = expiresAt,
             createdAt = LocalDateTime.now(),

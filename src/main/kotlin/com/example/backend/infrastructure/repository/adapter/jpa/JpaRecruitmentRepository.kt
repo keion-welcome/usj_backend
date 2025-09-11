@@ -54,10 +54,10 @@ interface JpaRecruitmentRepository : JpaRepository<RecruitmentEntity, Long> {
     fun findByStatusOrderByCreatedAtDesc(status: RecruitmentStatus): List<RecruitmentEntity>
 
     /**
-     * アトラクションIDで募集を検索
+     * アトラクション名で募集を検索
      *
-     * @param attractionId アトラクションID
+     * @param attractionName アトラクション名
      * @return 募集リスト
      */
-    fun findByAttractionIdOrderByCreatedAtDesc(attractionId: Long): List<RecruitmentEntity>
+    fun findByAttractionNameOrderByCreatedAtDesc(attractionName: String): List<RecruitmentEntity>
 }

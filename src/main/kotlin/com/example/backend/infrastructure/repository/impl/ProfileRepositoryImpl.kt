@@ -32,11 +32,11 @@ class ProfileRepositoryImpl(
         val userId = profile.userId ?: throw IllegalArgumentException("User ID cannot be null")
         
         // ユーザーが存在するかチェック
-        val userExists = jdbcTemplate.queryForObject(
+        val userExists = (jdbcTemplate.queryForObject(
             "SELECT COUNT(*) FROM users WHERE id = ?",
             Int::class.java,
             userId
-        ) > 0
+        ) ?: 0) > 0
         
         if (!userExists) {
             throw IllegalArgumentException("User entity not found")

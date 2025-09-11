@@ -75,9 +75,7 @@ class AttractionRepositoryImpl(
             name = this.name,
             description = this.description,
             waitTime = this.waitTime,
-            isActive = this.isActive,
-            createdAt = this.createdAt,
-            updatedAt = this.updatedAt
+            isActive = this.isActive
         )
     }
     

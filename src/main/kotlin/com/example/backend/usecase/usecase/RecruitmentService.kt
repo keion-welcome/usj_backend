@@ -50,10 +50,10 @@ interface RecruitmentService {
     /**
      * アトラクションに関連する募集を取得する
      *
-     * @param attractionId アトラクションID
+     * @param attractionName アトラクション名
      * @return 募集のリスト
      */
-    fun findByAttractionId(attractionId: Long): List<Recruitment>
+    fun findByAttractionName(attractionName: String): List<Recruitment>
 
     /**
      * 募集を更新する
@@ -121,8 +121,8 @@ class RecruitmentServiceImpl(
         return recruitmentRepositoryPort.findByParticipantUserId(userId)
     }
 
-    override fun findByAttractionId(attractionId: Long): List<Recruitment> {
-        return recruitmentRepositoryPort.findByAttractionId(attractionId)
+    override fun findByAttractionName(attractionName: String): List<Recruitment> {
+        return recruitmentRepositoryPort.findByAttractionName(attractionName)
     }
 
     override fun updateRecruitment(recruitment: Recruitment): Recruitment {

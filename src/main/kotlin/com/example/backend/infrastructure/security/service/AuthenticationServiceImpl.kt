@@ -2,7 +2,6 @@ package com.example.backend.infrastructure.security.service
 
 import com.example.backend.infrastructure.security.jwt.JwtUtil
 import com.example.backend.usecase.gateway.AuthenticationPort
-import com.example.backend.usecase.gateway.UserRepositoryPort
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.context.SecurityContextHolder
@@ -14,39 +13,31 @@ import org.springframework.stereotype.Service
 @Service
 class AuthenticationServiceImpl(
     private val authenticationManager: AuthenticationManager,
-    private val jwtUtil: JwtUtil,
-    private val userRepository: UserRepositoryPort
+    private val jwtUtil: JwtUtil
 ) : AuthenticationPort {
 
     /**
-     * ユーザーを認証する
+     * ユーザーを認証し、そのユーザーのメールアドレスを返す。
      *
      * @param email メールアドレス
      * @param password パスワード
-     * @return 認証されたユーザーのuserId（UUID）
+     * @return 認証されたユーザーのメールアドレス
      */
     override fun authenticate(email: String, password: String): String {
-        // まずemailでユーザーを検索してuserIdを取得
-        val user = userRepository.findByEmail(email)
-            ?: throw IllegalArgumentException("Invalid credentials")
-        
-        // userIdを使って認証
         val authentication = authenticationManager.authenticate(
-            UsernamePasswordAuthenticationToken(user.userId, password)
+            UsernamePasswordAuthenticationToken(email, password)
         )
-        
         SecurityContextHolder.getContext().authentication = authentication
-        
-        return user.userId!!
+        return email // 認証されたユーザーのメールアドレスを返す
     }
 
     /**
-     * JWTトークンを生成する
+     * メールアドレスを元にJWTトークンを生成する
      *
-     * @param userId ユーザーID（UUID）
+     * @param email メールアドレス
      * @return 生成されたJWTトークン
      */
-    override fun generateToken(userId: String): String {
-        return jwtUtil.generateToken(userId)
+    override fun generateToken(email: String): String {
+        return jwtUtil.generateToken(email)
     }
 } 

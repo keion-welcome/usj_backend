@@ -8,11 +8,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.stereotype.Service
 
 /**
- * Spring Securityがユーザー名（今回はユーザーID（UUID））でユーザーを検索するためのサービス。
- * セキュリティ専用のリポジトリを使用して、アプリケーション層との依存関係を分離。
- * 
- * 注意：Spring Securityの標準インターフェースにより、パラメータ名は`username`ですが、
- * 実際にはユーザーID（UUID）を使用しています。
+ * Spring Securityがユーザー名（このアプリケーションではメールアドレス）でユーザーを検索するためのサービス。
  */
 @Service
 class UserDetailsServiceImpl(
@@ -20,18 +16,19 @@ class UserDetailsServiceImpl(
 ) : UserDetailsService {
 
     /**
-     * ユーザーID（UUID）を元にユーザー情報をロードする。
+     * メールアドレスを元にユーザー情報をロードする。
      * 
-     * @param username 実際にはユーザーID（UUID）（Spring Securityの標準インターフェースのため）
+     * @param username ユーザーのメールアドレス
      * @return UserDetailsオブジェクト
      * @throws org.springframework.security.core.userdetails.UsernameNotFoundException ユーザーが見つからない場合
      */
     override fun loadUserByUsername(username: String): UserDetails {
-        // usernameパラメータは実際にはユーザーID（UUID）
-        val securityUser = securityUserRepository.findByUserId(username)
-            ?: throw UsernameNotFoundException("User not found with userId: $username")
+        // usernameパラメータはメールアドレスとして扱う
+        val securityUser = securityUserRepository.findByEmail(username)
+            ?: throw UsernameNotFoundException("User not found with email: $username")
 
         // Spring Securityが扱うUserオブジェクトを生成して返す
-        return User(securityUser.userId, securityUser.password, emptyList()) // authoritiesは空でOK
+        // 第1引数は、認証プリンシパルとして使われる「ユーザー名」
+        return User(securityUser.email, securityUser.password, emptyList()) 
     }
 }

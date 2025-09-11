@@ -1,23 +1,23 @@
 package com.example.backend.usecase.gateway
 
 /**
- * 認証に関するポートインターフェース
+ * 認証に関する処理のインターフェース
  */
 interface AuthenticationPort {
     /**
-     * ユーザーを認証する
+     * ユーザーを認証し、そのユーザーのメールアドレスを返す。
      *
      * @param email メールアドレス
      * @param password パスワード
-     * @return 認証されたユーザーのuserId（UUID）
+     * @return 認証されたユーザーのメールアドレス
      */
     fun authenticate(email: String, password: String): String
-    
+
     /**
-     * JWTトークンを生成する
+     * メールアドレスを元にJWTトークンを生成する
      *
-     * @param userId ユーザーID（UUID）
+     * @param email メールアドレス
      * @return 生成されたJWTトークン
      */
-    fun generateToken(userId: String): String
+    fun generateToken(email: String): String
 } 

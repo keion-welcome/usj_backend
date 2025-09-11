@@ -42,3 +42,4 @@ out/
 ### AI Tools ###
 .gemini
 .claude
+websocket-test

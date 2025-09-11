@@ -1,4 +1,4 @@
-package com.example.backend.infrastructure.repository
+package com.example.backend.infrastructure.repository.adapter.jpa
 
 import com.example.backend.infrastructure.entity.RecruitmentParticipantEntity
 import com.example.backend.infrastructure.entity.RecruitmentParticipantId

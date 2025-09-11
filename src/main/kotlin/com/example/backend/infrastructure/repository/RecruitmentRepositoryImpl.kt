@@ -5,6 +5,9 @@ import com.example.backend.domain.model.RecruitmentParticipant
 import com.example.backend.domain.model.RecruitmentStatus
 import com.example.backend.infrastructure.entity.RecruitmentEntity
 import com.example.backend.infrastructure.entity.RecruitmentParticipantEntity
+import com.example.backend.infrastructure.repository.adapter.jpa.JpaRecruitmentRepository
+import com.example.backend.infrastructure.repository.adapter.jpa.JpaRecruitmentParticipantRepository
+import com.example.backend.infrastructure.repository.adapter.jdbc.JdbcRecruitmentRepository
 import com.example.backend.usecase.gateway.RecruitmentRepositoryPort
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
@@ -19,7 +22,8 @@ import java.time.LocalDateTime
 @Repository
 class RecruitmentRepositoryImpl(
     private val jpaRecruitmentRepository: JpaRecruitmentRepository,
-    private val jpaRecruitmentParticipantRepository: JpaRecruitmentParticipantRepository
+    private val jpaRecruitmentParticipantRepository: JpaRecruitmentParticipantRepository,
+    private val jdbcRecruitmentRepository: JdbcRecruitmentRepository
 ) : RecruitmentRepositoryPort {
 
     /**
@@ -265,5 +269,47 @@ class RecruitmentRepositoryImpl(
             com.example.backend.infrastructure.entity.RecruitmentStatus.COMPLETED -> RecruitmentStatus.COMPLETED
             com.example.backend.infrastructure.entity.RecruitmentStatus.CANCELLED -> RecruitmentStatus.CANCELLED
         }
+    }
+    
+    // === JDBC使用のメソッド ===
+    
+    /**
+     * 募集を作成（JDBC使用）
+     */
+    fun createRecruitmentWithJdbc(recruitment: Recruitment): Recruitment {
+        return jdbcRecruitmentRepository.createRecruitment(recruitment)
+    }
+    
+    /**
+     * 募集を更新（JDBC使用）
+     */
+    fun updateRecruitmentWithJdbc(recruitment: Recruitment): Recruitment {
+        return jdbcRecruitmentRepository.updateRecruitment(recruitment)
+    }
+    
+    /**
+     * 募集を削除（JDBC使用）
+     */
+    fun deleteRecruitmentWithJdbc(id: Long): Boolean {
+        return jdbcRecruitmentRepository.deleteRecruitment(id)
+    }
+    
+    /**
+     * 複雑な条件で募集を検索（JDBC使用）
+     */
+    fun searchRecruitmentsWithJdbc(
+        title: String? = null,
+        attractionId: Long? = null,
+        status: RecruitmentStatus? = null,
+        maxParticipants: Int? = null
+    ): List<Recruitment> {
+        return jdbcRecruitmentRepository.findByComplexCriteria(title, attractionId, status, maxParticipants)
+    }
+    
+    /**
+     * 全募集を取得（JDBC使用）
+     */
+    fun getAllRecruitmentsWithJdbc(): List<Recruitment> {
+        return jdbcRecruitmentRepository.findAll()
     }
 }

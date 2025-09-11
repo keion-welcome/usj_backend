@@ -3,17 +3,23 @@
 ## 概要
 USJアプリケーションのバックエンドAPI。ユニバーサル・スタジオ・ジャパンでの体験を支援するアプリケーションです。
 
-## 最新の変更点 (2024年更新)
+## 最新の変更点 (2025年更新)
 
 ### リポジトリアーキテクチャの刷新
 - **JPAとJDBCの完全分離**: データアクセス層をクリーンアーキテクチャに則って再設計
 - **アダプターパターンの採用**: `adapter/jpa/` と `adapter/jdbc/` フォルダに分離
 - **責任の明確化**: JPAは標準CRUD、JDBCは複雑クエリと明確に役割分担
 
+### データベーススキーマの簡素化（V10マイグレーション）
+- **attractionsテーブルの削除**: 正規化されたアトラクション管理を非正規化方式に変更
+- **アトラクション参照の簡素化**: `attraction_id (BIGINT)` → `attraction_name (VARCHAR)` に変更
+- **プロフィール機能の拡張**: `favorite_attraction` フィールドを追加
+
 ### 削除された機能
 - **集計計算機能**: JDBCリポジトリから COUNT, SUM 等の集計処理を除去
 - **複雑なJOIN処理**: プロフィール情報を含む複合クエリを簡素化
 - **バッチ処理機能**: ユーザーステータス一括更新機能を削除
+- **アトラクション管理API**: attractionsテーブル削除によりCRUD APIを廃止
 
 ### 新しいフォルダ構造
 ```
@@ -123,9 +129,9 @@ infrastructure/repository/
 - ユーザー情報検索
 
 ### アトラクション機能
-- アトラクション情報管理
-- 待ち時間情報
-- 検索・フィルタリング
+- ⚠️ **注意**: V10マイグレーションでattractionsテーブルは削除されました
+- アトラクション名は文字列として募集に直接保存されます
+- 以前のアトラクション管理機能は無効化されています
 
 ### 募集機能
 - 募集作成・管理
@@ -144,9 +150,11 @@ infrastructure/repository/
 - `PUT /api/users/profile` - プロフィール更新
 
 ### アトラクション
-- `GET /api/attractions` - アトラクション一覧
-- `GET /api/attractions/{id}` - アトラクション詳細
-- `GET /api/attractions/search` - アトラクション検索
+- ⚠️ **廃止**: attractionsテーブル削除により、以下のエンドポイントは無効
+- ~~`GET /api/attractions` - アトラクション一覧~~
+- ~~`GET /api/attractions/{id}` - アトラクション詳細~~
+- ~~`GET /api/attractions/search` - アトラクション検索~~
+- `GET /api/recruitments/attraction/{attractionName}` - アトラクション名別募集一覧（新機能）
 
 ### 募集
 - `GET /api/recruitments` - 募集一覧
@@ -231,11 +239,17 @@ open build/reports/tests/test/index.html
 
 ### 主要テーブル
 - **users** - ユーザー情報
-- **profiles** - ユーザープロフィール
-- **attractions** - アトラクション情報
-- **recruitments** - 募集情報
+- **profiles** - ユーザープロフィール（`favorite_attraction`フィールド追加）
+- ~~**attractions** - アトラクション情報~~ **（V10で削除）**
+- **recruitments** - 募集情報（`attraction_name`フィールドに変更）
 - **recruitment_participants** - 募集参加者
 - **invalidated_tokens** - 無効化されたトークン
+
+### 重要な変更点（V10マイグレーション）
+- `attractions`テーブルを削除
+- `recruitments.attraction_id (BIGINT)` → `recruitments.attraction_name (VARCHAR)`に変更
+- `profiles.favorite_attraction (VARCHAR)`フィールドを追加
+- アトラクション情報は文字列として直接保存する方式に変更
 
 ### マイグレーション
 ```bash

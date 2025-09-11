@@ -1,7 +1,7 @@
 package com.example.backend.infrastructure.repository.adapter.jdbc
 
 import com.example.backend.domain.model.Recruitment
-import com.example.backend.infrastructure.entity.RecruitmentStatus
+import com.example.backend.domain.model.RecruitmentStatus
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Repository
 import java.time.LocalDateTime
@@ -17,7 +17,7 @@ class JdbcRecruitmentRepository(
     fun createRecruitment(recruitment: Recruitment): Recruitment {
         val sql = """
             INSERT INTO recruitments (user_id, title, description, max_participants, 
-                                    status, attraction_id, expires_at, created_at, updated_at)
+                                    status, attraction_name, expires_at, created_at, updated_at)
             VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), NOW())
         """.trimIndent()
         
@@ -28,7 +28,7 @@ class JdbcRecruitmentRepository(
             recruitment.description,
             recruitment.maxParticipants,
             recruitment.status.name,
-            recruitment.attractionId,
+            recruitment.attractionName,
             recruitment.expiresAt
         )
         return recruitment
@@ -41,7 +41,7 @@ class JdbcRecruitmentRepository(
         val sql = """
             UPDATE recruitments 
             SET title = ?, description = ?, max_participants = ?,
-                status = ?, attraction_id = ?, expires_at = ?, updated_at = NOW()
+                status = ?, attraction_name = ?, expires_at = ?, updated_at = NOW()
             WHERE id = ?
         """.trimIndent()
         
@@ -51,7 +51,7 @@ class JdbcRecruitmentRepository(
             recruitment.description,
             recruitment.maxParticipants,
             recruitment.status.name,
-            recruitment.attractionId,
+            recruitment.attractionName,
             recruitment.expiresAt,
             recruitment.id
         )
@@ -73,7 +73,7 @@ class JdbcRecruitmentRepository(
     fun findById(id: Long): Recruitment? {
         val sql = """
             SELECT id, user_id, title, description, max_participants,
-                   status, attraction_id, expires_at
+                   status, attraction_name, expires_at
             FROM recruitments 
             WHERE id = ?
         """.trimIndent()
@@ -87,7 +87,7 @@ class JdbcRecruitmentRepository(
                     description = rs.getString("description"),
                     maxParticipants = rs.getInt("max_participants"),
                     status = RecruitmentStatus.valueOf(rs.getString("status")),
-                    attractionId = rs.getLong("attraction_id"),
+                    attractionName = rs.getString("attraction_name"),
                     expiresAt = rs.getTimestamp("expires_at")?.toLocalDateTime()
                 )
             }
@@ -102,7 +102,7 @@ class JdbcRecruitmentRepository(
     fun findByUserId(userId: Long): List<Recruitment> {
         val sql = """
             SELECT id, user_id, title, description, max_participants,
-                   status, attraction_id, expires_at
+                   status, attraction_name, expires_at
             FROM recruitments 
             WHERE user_id = ?
             ORDER BY created_at DESC
@@ -116,7 +116,7 @@ class JdbcRecruitmentRepository(
                 description = rs.getString("description"),
                 maxParticipants = rs.getInt("max_participants"),
                 status = RecruitmentStatus.valueOf(rs.getString("status")),
-                attractionId = rs.getLong("attraction_id"),
+                attractionName = rs.getString("attraction_name"),
                 expiresAt = rs.getTimestamp("expires_at")?.toLocalDateTime()
             )
         }
@@ -128,7 +128,7 @@ class JdbcRecruitmentRepository(
     fun findByStatus(status: RecruitmentStatus): List<Recruitment> {
         val sql = """
             SELECT id, user_id, title, description, max_participants,
-                   status, attraction_id, expires_at
+                   status, attraction_name, expires_at
             FROM recruitments 
             WHERE status = ?
             ORDER BY created_at DESC
@@ -142,25 +142,25 @@ class JdbcRecruitmentRepository(
                 description = rs.getString("description"),
                 maxParticipants = rs.getInt("max_participants"),
                 status = RecruitmentStatus.valueOf(rs.getString("status")),
-                attractionId = rs.getLong("attraction_id"),
+                attractionName = rs.getString("attraction_name"),
                 expiresAt = rs.getTimestamp("expires_at")?.toLocalDateTime()
             )
         }
     }
 
     /**
-     * アトラクションIDで募集を検索
+     * アトラクション名で募集を検索
      */
-    fun findByAttractionId(attractionId: Long): List<Recruitment> {
+    fun findByAttractionName(attractionName: String): List<Recruitment> {
         val sql = """
             SELECT id, user_id, title, description, max_participants,
-                   status, attraction_id, expires_at
+                   status, attraction_name, expires_at
             FROM recruitments 
-            WHERE attraction_id = ?
+            WHERE attraction_name = ?
             ORDER BY created_at DESC
         """.trimIndent()
         
-        return jdbcTemplate.query(sql, arrayOf(attractionId)) { rs, _ ->
+        return jdbcTemplate.query(sql, arrayOf(attractionName)) { rs, _ ->
             Recruitment(
                 id = rs.getLong("id"),
                 userId = rs.getLong("user_id"),
@@ -168,7 +168,7 @@ class JdbcRecruitmentRepository(
                 description = rs.getString("description"),
                 maxParticipants = rs.getInt("max_participants"),
                 status = RecruitmentStatus.valueOf(rs.getString("status")),
-                attractionId = rs.getLong("attraction_id"),
+                attractionName = rs.getString("attraction_name"),
                 expiresAt = rs.getTimestamp("expires_at")?.toLocalDateTime()
             )
         }
@@ -180,7 +180,7 @@ class JdbcRecruitmentRepository(
     fun findAll(): List<Recruitment> {
         val sql = """
             SELECT id, user_id, title, description, max_participants,
-                   status, attraction_id, expires_at
+                   status, attraction_name, expires_at
             FROM recruitments 
             ORDER BY created_at DESC
         """.trimIndent()
@@ -193,7 +193,7 @@ class JdbcRecruitmentRepository(
                 description = rs.getString("description"),
                 maxParticipants = rs.getInt("max_participants"),
                 status = RecruitmentStatus.valueOf(rs.getString("status")),
-                attractionId = rs.getLong("attraction_id"),
+                attractionName = rs.getString("attraction_name"),
                 expiresAt = rs.getTimestamp("expires_at")?.toLocalDateTime()
             )
         }
@@ -204,7 +204,7 @@ class JdbcRecruitmentRepository(
      */
     fun findByComplexCriteria(
         title: String? = null,
-        attractionId: Long? = null,
+        attractionName: String? = null,
         status: RecruitmentStatus? = null,
         maxParticipants: Int? = null
     ): List<Recruitment> {
@@ -216,8 +216,8 @@ class JdbcRecruitmentRepository(
             params.add("%$it%")
         }
         
-        attractionId?.let {
-            conditions.add("attraction_id = ?")
+        attractionName?.let {
+            conditions.add("attraction_name = ?")
             params.add(it)
         }
         
@@ -237,7 +237,7 @@ class JdbcRecruitmentRepository(
         
         val sql = """
             SELECT id, user_id, title, description, max_participants,
-                   status, attraction_id, expires_at
+                   status, attraction_name, expires_at
             FROM recruitments $whereClause 
             ORDER BY created_at DESC
         """.trimIndent()
@@ -250,7 +250,7 @@ class JdbcRecruitmentRepository(
                 description = rs.getString("description"),
                 maxParticipants = rs.getInt("max_participants"),
                 status = RecruitmentStatus.valueOf(rs.getString("status")),
-                attractionId = rs.getLong("attraction_id"),
+                attractionName = rs.getString("attraction_name"),
                 expiresAt = rs.getTimestamp("expires_at")?.toLocalDateTime()
             )
         }

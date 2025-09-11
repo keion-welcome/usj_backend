@@ -1,41 +1,78 @@
 package com.example.backend.infrastructure.entity
 
 import jakarta.persistence.*
-import java.time.LocalDateTime
+import jakarta.validation.constraints.Size
 
 /**
- * アトラクションエンティティ
+ * アトラクション情報を表すJPAエンティティ
  *
  * @property id アトラクションの一意なID
  * @property name アトラクション名
  * @property description アトラクションの説明
  * @property waitTime 待ち時間（分）
  * @property isActive アクティブかどうか
- * @property createdAt 作成日時
- * @property updatedAt 更新日時
  */
 @Entity
 @Table(name = "attractions")
-data class AttractionEntity(
+class AttractionEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long? = null,
+    var id: Long? = null,
 
-    @Column(nullable = false, unique = true)
-    val name: String,
+    @Size(min = 1, max = 255)
+    @Column(nullable = false, length = 255, unique = true)
+    var name: String,
 
-    @Column(columnDefinition = "TEXT")
-    val description: String? = null,
+    @Size(max = 1000)
+    @Column(length = 1000)
+    var description: String? = null,
 
     @Column(name = "wait_time", nullable = false)
-    val waitTime: Int = 0,
+    var waitTime: Int = 0,
 
     @Column(name = "is_active", nullable = false)
-    val isActive: Boolean = true,
+    var isActive: Boolean = true
 
-    @Column(name = "created_at", nullable = false, updatable = false)
-    val createdAt: LocalDateTime? = null,
-
-    @Column(name = "updated_at", nullable = false)
-    val updatedAt: LocalDateTime? = null
-)
+) : BaseEntity() {
+    
+    // JPA用のデフォルトコンストラクタ
+    constructor() : this(
+        id = null,
+        name = "",
+        description = null,
+        waitTime = 0,
+        isActive = true
+    )
+    
+    fun copy(
+        id: Long? = this.id,
+        name: String = this.name,
+        description: String? = this.description,
+        waitTime: Int = this.waitTime,
+        isActive: Boolean = this.isActive
+    ): AttractionEntity {
+        return AttractionEntity(
+            id = id,
+            name = name,
+            description = description,
+            waitTime = waitTime,
+            isActive = isActive
+        )
+    }
+    
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+        
+        other as AttractionEntity
+        return id == other.id
+    }
+    
+    override fun hashCode(): Int {
+        return id?.hashCode() ?: 0
+    }
+    
+    override fun toString(): String {
+        return "AttractionEntity(id=$id, name='$name', waitTime=$waitTime, isActive=$isActive)"
+    }
+}

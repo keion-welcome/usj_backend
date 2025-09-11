@@ -65,10 +65,10 @@ interface RecruitmentRepositoryPort {
     /**
      * アトラクションに関連する募集を取得する
      *
-     * @param attractionId アトラクションID
+     * @param attractionName アトラクション名
      * @return 該当する募集のリスト
      */
-    fun findByAttractionId(attractionId: Long): List<Recruitment>
+    fun findByAttractionName(attractionName: String): List<Recruitment>
 
     /**
      * 募集に参加する

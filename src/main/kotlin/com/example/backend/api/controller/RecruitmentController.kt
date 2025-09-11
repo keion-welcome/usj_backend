@@ -53,7 +53,7 @@ class RecruitmentController(
             title = request.title,
             description = request.description,
             userId = userId,
-            attractionId = request.attractionId,
+            attractionName = request.attractionName,
             maxParticipants = request.maxParticipants,
             expiresAt = request.expiresAt
         )
@@ -140,12 +140,12 @@ class RecruitmentController(
     /**
      * アトラクション別の募集を取得する
      *
-     * @param attractionId アトラクションID
+     * @param attractionName アトラクション名
      * @return 募集リスト
      */
-    @GetMapping("/attraction/{attractionId}")
-    fun getRecruitmentsByAttraction(@PathVariable attractionId: Long): List<RecruitmentResponse> {
-        return recruitmentService.findByAttractionId(attractionId)
+    @GetMapping("/attraction/{attractionName}")
+    fun getRecruitmentsByAttraction(@PathVariable attractionName: String): List<RecruitmentResponse> {
+        return recruitmentService.findByAttractionName(attractionName)
             .map { RecruitmentResponse.from(it) }
     }
 

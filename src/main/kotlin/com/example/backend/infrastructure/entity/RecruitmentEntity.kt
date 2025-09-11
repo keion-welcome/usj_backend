@@ -43,12 +43,11 @@ data class RecruitmentEntity(
     @Column(name = "expires_at")
     val expiresAt: LocalDateTime? = null,
 
-    @Column(name = "attraction_id")
-    val attractionId: Long? = null,
+    @Column(name = "attraction_name")
+    val attractionName: String? = null,
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "attraction_id", insertable = false, updatable = false)
-    val attraction: AttractionEntity? = null,
+    // 注意: attractionsテーブルは削除されたため、このリレーションは無効
+    // アトラクション情報は attraction_name として文字列で保存
 
     // 参加者リスト
     @OneToMany(mappedBy = "recruitment", fetch = FetchType.LAZY, cascade = [CascadeType.ALL])

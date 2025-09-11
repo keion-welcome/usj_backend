@@ -12,7 +12,7 @@ import java.time.LocalDateTime
  * @property maxParticipants 最大参加者数
  * @property status 募集ステータス
  * @property expiresAt 募集締切日時
- * @property attractionId アトラクションID
+ * @property attractionName アトラクション名
  * @property attraction アトラクション情報
  * @property participants 参加者リスト
  * @property createdAt 募集の作成日時
@@ -26,7 +26,7 @@ data class Recruitment(
     val maxParticipants: Int = 4,
     val status: RecruitmentStatus = RecruitmentStatus.ACTIVE,
     val expiresAt: LocalDateTime? = null,
-    val attractionId: Long? = null,
+    val attractionName: String? = null,
     val attraction: Attraction? = null,
     val participants: List<RecruitmentParticipant> = emptyList(),
     val createdAt: LocalDateTime? = null,

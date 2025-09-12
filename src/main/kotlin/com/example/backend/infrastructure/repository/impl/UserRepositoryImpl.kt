@@ -4,6 +4,7 @@ import com.example.backend.domain.model.User
 import com.example.backend.infrastructure.entity.UserEntity
 import com.example.backend.infrastructure.repository.jpa.JpaUserRepository
 import com.example.backend.usecase.gateway.UserRepositoryPort
+import com.example.backend.shared.util.Uuid7Utils
 import org.springframework.stereotype.Repository
 
 /**
@@ -20,23 +21,21 @@ class UserRepositoryImpl(
      */
     override fun save(user: User): User {
         val entity = UserEntity(
-            username = user.username,
+            id = user.id ?: throw IllegalArgumentException("User.id must be provided (generated in use case)"),
             email = user.email,
             password = user.password
-            // userIdは@PrePersistで自動生成される
         )
         val saved = jpaRepository.save(entity)
         
-        // UserID生成の検証（デバッグ強化）
-        requireNotNull(saved.userId) { 
-            "Critical error: UserEntity.userId generation failed for user: ${saved.username}. " +
-            "This indicates a problem with @PrePersist or database constraints." 
+        // ID生成の検証
+        requireNotNull(saved.id) { 
+            "Critical error: UserEntity.id generation failed for user: ${saved.email}" 
         }
-        require(saved.userId!!.isNotBlank()) { 
-            "Critical error: UserEntity.userId is blank for user: ${saved.username}" 
+        require(saved.id!!.isNotBlank()) { 
+            "Critical error: UserEntity.id is blank for user: ${saved.email}" 
         }
         
-        return User(saved.id, saved.userId, saved.username, saved.email, saved.password)
+        return User(saved.id, saved.email, saved.password)
     }
 
     /**
@@ -44,25 +43,16 @@ class UserRepositoryImpl(
      */
     override fun findByEmail(email: String): User? {
         return jpaRepository.findByEmail(email)?.let {
-            User(it.id, it.userId, it.username, it.email, it.password)
+            User(it.id, it.email, it.password)
         }
     }
 
     /**
      * IDでユーザーを検索
      */
-    override fun findById(id: Long): User? {
+    override fun findById(id: String): User? {
         return jpaRepository.findById(id).orElse(null)?.let {
-            User(it.id, it.userId, it.username, it.email, it.password)
-        }
-    }
-    
-    /**
-     * ユーザーID（UUID）でユーザーを検索
-     */
-    override fun findByUserId(userId: String): User? {
-        return jpaRepository.findByUserId(userId)?.let {
-            User(it.id, it.userId, it.username, it.email, it.password)
+            User(it.id, it.email, it.password)
         }
     }
 }

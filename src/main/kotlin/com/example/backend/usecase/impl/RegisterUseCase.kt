@@ -4,6 +4,7 @@ import com.example.backend.api.dto.request.RegisterRequest
 import com.example.backend.api.dto.response.AuthResponse
 import com.example.backend.api.mapper.UserMapper
 import com.example.backend.infrastructure.security.jwt.JwtUtil
+import com.example.backend.shared.util.Uuid7Utils
 import com.example.backend.usecase.gateway.UserRepositoryPort
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
@@ -37,8 +38,11 @@ class RegisterUseCase(
         // パスワードをハッシュ化
         val encodedPassword = passwordEncoder.encode(request.password)
 
-        // DTO → ドメインモデルへ変換
-        val user = UserMapper.toDomain(request, encodedPassword)
+        // UUID7をユースケース層で生成
+        val generatedId = Uuid7Utils.generate()
+
+        // DTO → ドメインモデルへ変換（生成したIDを付与）
+        val user = UserMapper.toDomain(request, encodedPassword).copy(id = generatedId)
 
         // ユーザーを保存
         val saved = userRepository.save(user)

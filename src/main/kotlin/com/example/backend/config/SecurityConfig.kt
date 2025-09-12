@@ -17,6 +17,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration
 import org.springframework.web.cors.CorsConfigurationSource
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource
+import org.springframework.http.MediaType
+import jakarta.servlet.http.HttpServletResponse
 
 /**
  * Spring Securityの全体的な設定を行うクラス。
@@ -24,7 +26,8 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 @Configuration
 @EnableWebSecurity
 class SecurityConfig(
-    private val jwtAuthFilter: JwtAuthFilter
+    private val corsConfigurationSource: CorsConfigurationSource,
+    private val jwtAuthFilter: JwtAuthFilter,
 ) {
 
     @Bean
@@ -47,7 +50,8 @@ class SecurityConfig(
             .cors(Customizer.withDefaults())
             // CSRF保護を無効化（JWT利用のため）
             .csrf { it.disable() }
-            // URLごとの認可設定
+            // CORS設定を有効化
+            .cors { it.configurationSource(corsConfigurationSource) }
             .authorizeHttpRequests { auth ->
                 auth
                     // OPTIONSメソッドはすべて許可 (プリフライトリクエストのため)
@@ -57,7 +61,8 @@ class SecurityConfig(
                         "/api/auth/**",
                         "/swagger-ui.html",
                         "/swagger-ui/**",
-                        "/v3/api-docs/**"
+                        "/v3/api-docs/**",
+                        "/error"
                     ).permitAll()
                     // その他のリクエストはすべて認証が必要
                     .anyRequest().authenticated()
@@ -66,7 +71,18 @@ class SecurityConfig(
             .sessionManagement { session ->
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             }
-            // 作成したJWT認証フィルターを、標準の認証フィルターの前に配置
+            // 認証エラー時の処理
+            .exceptionHandling { exceptions ->
+                exceptions.authenticationEntryPoint { _, response, _ ->
+                    response.contentType = MediaType.APPLICATION_JSON_VALUE
+                    response.status = HttpServletResponse.SC_UNAUTHORIZED
+                    response.writer.write("{" + "\"status\":401,\"error\":\"Unauthorized\"}" )
+                }.accessDeniedHandler { _, response, _ ->
+                    response.contentType = MediaType.APPLICATION_JSON_VALUE
+                    response.status = HttpServletResponse.SC_FORBIDDEN
+                    response.writer.write("{" + "\"status\":403,\"error\":\"Forbidden\"}" )
+                }
+            }
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter::class.java)
 
         return http.build()

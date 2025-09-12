@@ -12,20 +12,10 @@ import jakarta.validation.constraints.*
 @Table(name = "users")
 class UserEntity(
 
-    // 主キー（内部用、AUTO_INCREMENT）
+    // 主キー（UUID）- APIでも使用
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var id: Long? = null,
-
-    // 外部識別子（API用、UUID7）- 自動生成
-    @GeneratedUuid7
-    @Column(nullable = false, unique = true, length = 36)
-    var userId: String? = null,
-
-    // ユーザー名（null不可、長さ制限）
-    @Size(min = 1, max = 50)
-    @Column(nullable = false, length = 50)
-    var username: String,
+    @Column(nullable = false, length = 36)
+    var id: String? = null,
 
     // メールアドレス（null不可、重複不可、形式検証）
     @Email
@@ -47,8 +37,6 @@ class UserEntity(
     // JPA用のデフォルトコンストラクタ
     constructor() : this(
         id = null,
-        userId = null,  // @GeneratedUuid7で自動生成
-        username = "",
         email = "",
         password = "",
         profile = null
@@ -67,6 +55,6 @@ class UserEntity(
     }
     
     override fun toString(): String {
-        return "UserEntity(id=$id, userId='$userId', username='$username', email='$email')"
+        return "UserEntity(id=$id, email='$email')"
     }
 }

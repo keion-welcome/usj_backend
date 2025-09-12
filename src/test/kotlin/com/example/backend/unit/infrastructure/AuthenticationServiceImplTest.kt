@@ -56,7 +56,6 @@ class AuthenticationServiceImplTest {
         val registeredUser = User(
             id = 1L,
             userId = "registered_user_001",
-            username = "registered_user",
             email = validUserEmail,
             password = "hashed_UserValidPassword123!"  // ハッシュ化済みパスワード
         )
@@ -140,7 +139,6 @@ class AuthenticationServiceImplTest {
         val securityTestUser = User(
             id = 10L,
             userId = "security_manager_user_001",
-            username = "security_manager_user",
             email = securityTestEmail,
             password = "hashed_SecurityManagerPass!"
         )
@@ -173,7 +171,6 @@ class AuthenticationServiceImplTest {
         val authFailureTestUser = User(
             id = 20L,
             userId = "auth_failure_user_001",
-            username = "auth_failure_user",
             email = authFailureTestEmail,
             password = "hashed_correct_password"  // 正しいハッシュ化パスワード
         )

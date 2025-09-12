@@ -10,7 +10,6 @@ import java.time.LocalDateTime
 data class UserResponse(
     val id: Long,
     val userId: String?,
-    val username: String,
     val email: String,
     val nickname: String?,
     val birthDate: String?,
@@ -26,9 +25,8 @@ data class UserResponse(
             return UserResponse(
                 id = user.id!!,
                 userId = user.userId,
-                username = user.username,
                 email = user.email,
-                nickname = profile?.nickname ?: user.username,
+                nickname = profile?.nickname ?: user.email,
                 birthDate = profile?.birthdate?.toString(),
                 gender = profile?.gender?.name,
                 hasAnnualPass = profile?.hasAnnualPass,

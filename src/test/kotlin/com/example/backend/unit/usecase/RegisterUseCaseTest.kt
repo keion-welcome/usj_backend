@@ -46,7 +46,6 @@ class RegisterUseCaseTest {
         val savedUser = User(
             id = null,
             userId = "user_yamada_taro_001",
-            username = "yamada_taro",
             email = "yamada.taro@example.com",
             password = "hashed_password"
         )

@@ -40,7 +40,6 @@ class UserRepositoryImpl(
         return User(
             id = user.id,
             userId = saved.id,
-            username = user.username,
             email = saved.email,
             password = saved.password
         )
@@ -54,7 +53,6 @@ class UserRepositoryImpl(
             User(
                 id = null,
                 userId = it.id,
-                username = "", // TODO: Add username field to UserEntity or derive from email
                 email = it.email,
                 password = it.password
             )
@@ -78,7 +76,6 @@ class UserRepositoryImpl(
             User(
                 id = null,
                 userId = it.id,
-                username = "", // TODO: Add username field to UserEntity or derive from email
                 email = it.email,
                 password = it.password
             )
@@ -91,11 +88,10 @@ class UserRepositoryImpl(
      * 複雑な条件でユーザーを検索（JDBC使用）
      */
     fun searchUsers(
-        username: String? = null,
         email: String? = null,
         createdAfter: String? = null
     ): List<User> {
-        return jdbcRepository.findByComplexCriteria(username, email, createdAfter)
+        return jdbcRepository.findByComplexCriteria(null, email, createdAfter)
     }
     
     /**

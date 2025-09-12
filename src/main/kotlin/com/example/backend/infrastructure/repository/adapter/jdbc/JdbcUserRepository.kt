@@ -20,11 +20,6 @@ class JdbcUserRepository(
         val conditions = mutableListOf<String>()
         val params = mutableListOf<Any>()
         
-        username?.let {
-            conditions.add("username LIKE ?")
-            params.add("%$it%")
-        }
-        
         email?.let {
             conditions.add("email LIKE ?")
             params.add("%$it%")
@@ -39,13 +34,12 @@ class JdbcUserRepository(
             "WHERE ${conditions.joinToString(" AND ")}"
         } else ""
         
-        val sql = "SELECT id, user_id, username, email, password FROM users $whereClause ORDER BY created_at DESC"
+        val sql = "SELECT id, email, password FROM users $whereClause ORDER BY created_at DESC"
         
         return jdbcTemplate.query(sql, params.toTypedArray()) { rs, _ ->
             User(
-                id = rs.getLong("id"),
-                userId = rs.getString("user_id"),
-                username = rs.getString("username"),
+                id = null,
+                userId = rs.getString("id"),
                 email = rs.getString("email"),
                 password = rs.getString("password")
             )
@@ -57,7 +51,7 @@ class JdbcUserRepository(
      */
     fun findWithPaging(offset: Int, limit: Int): List<User> {
         val sql = """
-            SELECT id, user_id, username, email, password 
+            SELECT id, email, password 
             FROM users 
             ORDER BY created_at DESC
             LIMIT ? OFFSET ?
@@ -65,9 +59,8 @@ class JdbcUserRepository(
         
         return jdbcTemplate.query(sql, arrayOf(limit, offset)) { rs, _ ->
             User(
-                id = rs.getLong("id"),
-                userId = rs.getString("user_id"),
-                username = rs.getString("username"),
+                id = null,
+                userId = rs.getString("id"),
                 email = rs.getString("email"),
                 password = rs.getString("password")
             )
@@ -79,11 +72,11 @@ class JdbcUserRepository(
      */
     fun createUser(user: User): User {
         val sql = """
-            INSERT INTO users (user_id, username, email, password, created_at, updated_at)
-            VALUES (?, ?, ?, ?, NOW(), NOW())
+            INSERT INTO users (id, email, password, created_at, updated_at)
+            VALUES (?, ?, ?, NOW(), NOW())
         """.trimIndent()
         
-        jdbcTemplate.update(sql, user.userId, user.username, user.email, user.password)
+        jdbcTemplate.update(sql, user.userId, user.email, user.password)
         return user
     }
 
@@ -93,11 +86,11 @@ class JdbcUserRepository(
     fun updateUser(user: User): User {
         val sql = """
             UPDATE users 
-            SET username = ?, email = ?, updated_at = NOW()
-            WHERE user_id = ?
+            SET email = ?, updated_at = NOW()
+            WHERE id = ?
         """.trimIndent()
         
-        jdbcTemplate.update(sql, user.username, user.email, user.userId)
+        jdbcTemplate.update(sql, user.email, user.userId)
         return user
     }
 
@@ -105,7 +98,7 @@ class JdbcUserRepository(
      * ユーザーの削除
      */
     fun deleteUser(userId: String): Boolean {
-        val sql = "DELETE FROM users WHERE user_id = ?"
+        val sql = "DELETE FROM users WHERE id = ?"
         val rowsAffected = jdbcTemplate.update(sql, userId)
         return rowsAffected > 0
     }
@@ -115,17 +108,16 @@ class JdbcUserRepository(
      */
     fun findByUserId(userId: String): User? {
         val sql = """
-            SELECT id, user_id, username, email, password 
+            SELECT id, email, password 
             FROM users 
-            WHERE user_id = ?
+            WHERE id = ?
         """.trimIndent()
         
         return try {
             jdbcTemplate.queryForObject(sql, arrayOf(userId)) { rs, _ ->
                 User(
-                    id = rs.getLong("id"),
-                    userId = rs.getString("user_id"),
-                    username = rs.getString("username"),
+                    id = null,
+                    userId = rs.getString("id"),
                     email = rs.getString("email"),
                     password = rs.getString("password")
                 )
@@ -140,7 +132,7 @@ class JdbcUserRepository(
      */
     fun findByEmail(email: String): User? {
         val sql = """
-            SELECT id, user_id, username, email, password 
+            SELECT id, email, password 
             FROM users 
             WHERE email = ?
         """.trimIndent()
@@ -148,9 +140,8 @@ class JdbcUserRepository(
         return try {
             jdbcTemplate.queryForObject(sql, arrayOf(email)) { rs, _ ->
                 User(
-                    id = rs.getLong("id"),
-                    userId = rs.getString("user_id"),
-                    username = rs.getString("username"),
+                    id = null,
+                    userId = rs.getString("id"),
                     email = rs.getString("email"),
                     password = rs.getString("password")
                 )
@@ -165,7 +156,7 @@ class JdbcUserRepository(
      */
     fun searchUsersByEmail(emailPattern: String): List<User> {
         val sql = """
-            SELECT id, user_id, username, email, password 
+            SELECT id, email, password 
             FROM users 
             WHERE email ILIKE ?
             ORDER BY email
@@ -173,9 +164,8 @@ class JdbcUserRepository(
         
         return jdbcTemplate.query(sql, arrayOf(emailPattern)) { rs, _ ->
             User(
-                id = rs.getLong("id"),
-                userId = rs.getString("user_id"),
-                username = rs.getString("username"),
+                id = null,
+                userId = rs.getString("id"),
                 email = rs.getString("email"),
                 password = rs.getString("password")
             )
@@ -187,16 +177,15 @@ class JdbcUserRepository(
      */
     fun findAll(): List<User> {
         val sql = """
-            SELECT id, user_id, username, email, password 
+            SELECT id, email, password 
             FROM users 
             ORDER BY created_at DESC
         """.trimIndent()
         
         return jdbcTemplate.query(sql) { rs, _ ->
             User(
-                id = rs.getLong("id"),
-                userId = rs.getString("user_id"),
-                username = rs.getString("username"),
+                id = null,
+                userId = rs.getString("id"),
                 email = rs.getString("email"),
                 password = rs.getString("password")
             )

@@ -60,18 +60,15 @@ class TestAuthHelper {
      * 
      * @param userId ユーザーID（省略時はランダム生成）
      * @param email メールアドレス（省略時はデフォルト値）
-     * @param username ユーザー名（省略時はデフォルト値）
      * @return テスト用ユーザー
      */
     fun createTestUser(
         userId: String = UUID.randomUUID().toString(),
-        email: String = "test@example.com",
-        username: String = "testuser"
+        email: String = "test@example.com"
     ): User {
         return User(
             id = 1L,
             userId = userId,
-            username = username,
             email = email,
             password = "hashedPassword"
         )

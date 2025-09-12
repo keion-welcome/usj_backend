@@ -14,7 +14,7 @@ import java.time.LocalDate
  * @property hasAnnualPass 年パスの有無
  */
 data class UpdateProfileRequest(
-    val userId: Long?,
+    val userId: String?,
     val nickname: String,
     val gender: String,
     val birthdate: LocalDate,

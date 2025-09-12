@@ -53,7 +53,7 @@ class ProfileRepositoryImpl(
                     """.trimIndent(),
                     Statement.RETURN_GENERATED_KEYS
                 )
-                ps.setLong(1, userId)
+                ps.setString(1, userId)
                 ps.setString(2, profile.nickname)
                 ps.setString(3, profile.gender.name)
                 ps.setDate(4, java.sql.Date.valueOf(profile.birthdate))
@@ -91,7 +91,7 @@ class ProfileRepositoryImpl(
      * @param userId ユーザーID
      * @return プロフィール（存在しない場合はnull）
      */
-    override fun findByUserId(userId: Long?): Profile? {
+    override fun findByUserId(userId: String?): Profile? {
         if (userId == null) return null
         
         return try {
@@ -112,7 +112,7 @@ class ProfileRepositoryImpl(
     private val profileRowMapper = RowMapper<Profile> { rs: ResultSet, _: Int ->
         Profile(
             id = rs.getLong("id"),
-            userId = rs.getLong("user_id"),
+            userId = rs.getString("user_id"),
             nickname = rs.getString("nickname"),
             gender = Gender.valueOf(rs.getString("gender")),
             birthdate = rs.getDate("birthdate").toLocalDate(),

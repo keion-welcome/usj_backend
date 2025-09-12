@@ -21,7 +21,7 @@ data class RecruitmentParticipantEntity(
 
     @Id
     @Column(name = "user_id")
-    val userId: Long,
+    val userId: String,
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "recruitment_id", insertable = false, updatable = false)
@@ -29,7 +29,7 @@ data class RecruitmentParticipantEntity(
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", insertable = false, updatable = false)
-    val user: UserEntity,
+    val user: UserEntity?,
 
     @Column(name = "joined_at", nullable = false)
     val joinedAt: LocalDateTime = LocalDateTime.now()
@@ -40,5 +40,5 @@ data class RecruitmentParticipantEntity(
  */
 data class RecruitmentParticipantId(
     val recruitmentId: Long = 0,
-    val userId: Long = 0
+    val userId: String = ""
 ) : java.io.Serializable

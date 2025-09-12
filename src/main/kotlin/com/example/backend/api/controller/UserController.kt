@@ -27,7 +27,7 @@ class UserController(
     fun getCurrentUser(@AuthenticationPrincipal userDetails: UserDetails): UserResponse {
         val email = userDetails.username
         val user = userRepositoryPort.findByEmail(email) ?: throw Exception("User not found")
-        val profile = jpaProfileRepository.findByUser_Id(user.id!!)
+        val profile = jpaProfileRepository.findByUser_Id(user.userId!!)
         return UserResponse.from(user, profile)
     }
 }

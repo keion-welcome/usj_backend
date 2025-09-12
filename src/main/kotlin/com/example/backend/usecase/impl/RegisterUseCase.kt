@@ -42,7 +42,7 @@ class RegisterUseCase(
         val generatedId = Uuid7Utils.generate()
 
         // DTO → ドメインモデルへ変換（生成したIDを付与）
-        val user = UserMapper.toDomain(request, encodedPassword).copy(id = generatedId)
+        val user = UserMapper.toDomain(request, encodedPassword).copy(userId = generatedId)
 
         // ユーザーを保存
         val saved = userRepository.save(user)

@@ -49,7 +49,7 @@ class CreateProfileUseCase(
         if (profile.userId == null) {
             errors.add("User ID cannot be null")
         } else {
-            val user = userRepositoryPort.findById(profile.userId)
+            val user = userRepositoryPort.findByUserId(profile.userId)
             if (user == null) {
                 errors.add("User with id ${profile.userId} not found")
             }

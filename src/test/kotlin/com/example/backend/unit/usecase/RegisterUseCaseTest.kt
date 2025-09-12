@@ -39,13 +39,12 @@ class RegisterUseCaseTest {
     fun `should register user successfully and return auth token`() {
         // Given
         val request = RegisterRequest(
-            username = "yamada_taro",
             email = "yamada.taro@example.com",
             password = "SecurePass123!"
         )
         
         val savedUser = User(
-            id = 1L,
+            id = null,
             userId = "user_yamada_taro_001",
             username = "yamada_taro",
             email = "yamada.taro@example.com",

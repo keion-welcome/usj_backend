@@ -61,7 +61,6 @@ class ProfileEntity(
     constructor() : this(
         id = null,
         user = UserEntity(
-            username = "",
             email = "",
             password = ""
         ),

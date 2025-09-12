@@ -23,7 +23,7 @@ class UserRepositoryImpl(
      */
     override fun save(user: User): User {
         val entity = UserEntity(
-            id = user.id ?: throw IllegalArgumentException("User.id must be provided (generated in use case)"),
+            id = user.userId ?: throw IllegalArgumentException("User.userId must be provided (generated in use case)"),
             email = user.email,
             password = user.password
         )
@@ -37,7 +37,13 @@ class UserRepositoryImpl(
             "Critical error: UserEntity.id is blank for user: ${saved.email}" 
         }
         
-        return User(saved.id, saved.email, saved.password)
+        return User(
+            id = user.id,
+            userId = saved.id,
+            username = user.username,
+            email = saved.email,
+            password = saved.password
+        )
     }
 
     /**
@@ -45,16 +51,37 @@ class UserRepositoryImpl(
      */
     override fun findByEmail(email: String): User? {
         return jpaRepository.findByEmail(email)?.let {
-            User(it.id, it.email, it.password)
+            User(
+                id = null,
+                userId = it.id,
+                username = "", // TODO: Add username field to UserEntity or derive from email
+                email = it.email,
+                password = it.password
+            )
         }
     }
 
     /**
-     * IDでユーザーを検索
+     * IDでユーザーを検索（Long型のID）
      */
-    override fun findById(id: String): User? {
-        return jpaRepository.findById(id).orElse(null)?.let {
-            User(it.id, it.email, it.password)
+    override fun findById(id: Long): User? {
+        // Long型IDはUserEntityでは使用していないため、nullを返す
+        // または適切なマッピングロジックを実装する必要がある
+        return null
+    }
+
+    /**
+     * ユーザーID（UUID）でユーザーを検索
+     */
+    override fun findByUserId(userId: String): User? {
+        return jpaRepository.findById(userId).orElse(null)?.let {
+            User(
+                id = null,
+                userId = it.id,
+                username = "", // TODO: Add username field to UserEntity or derive from email
+                email = it.email,
+                password = it.password
+            )
         }
     }
     

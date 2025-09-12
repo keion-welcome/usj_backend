@@ -19,7 +19,7 @@ object UserMapper {
         return User(
             id = null,          // DB自動生成（Repository層の責任）
             userId = null,      // DB自動生成（Repository層の責任）
-            username = request.username,
+            username = request.email.substringBefore("@"), // Use email prefix as username
             email = request.email,
             password = encodedPassword
         )

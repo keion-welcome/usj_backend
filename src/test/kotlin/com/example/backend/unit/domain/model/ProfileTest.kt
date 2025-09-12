@@ -10,7 +10,7 @@ class ProfileTest {
     fun `正常なプロフィールが作成される`() {
         val profile = Profile(
             id = 1L,
-            userId = 1L,
+            userId = "test-user-id",
             nickname = "テストユーザー",
             gender = Gender.MALE,
             birthdate = LocalDate.of(1990, 1, 1),

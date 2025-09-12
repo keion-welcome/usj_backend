@@ -6,8 +6,7 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface JpaProfileRepository : JpaRepository<ProfileEntity, Long> {
-    fun findByUser_Id(userId: Long): ProfileEntity?
-    fun findByUser_UserId(userUserId: String): ProfileEntity?
-    fun existsByUser_Id(userId: Long): Boolean
-    fun deleteByUser_Id(userId: Long)
+    fun findByUser_Id(userId: String): ProfileEntity?
+    fun existsByUser_Id(userId: String): Boolean
+    fun deleteByUser_Id(userId: String)
 }

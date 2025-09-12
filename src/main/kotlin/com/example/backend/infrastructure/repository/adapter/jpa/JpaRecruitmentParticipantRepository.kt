@@ -24,7 +24,7 @@ interface JpaRecruitmentParticipantRepository : JpaRepository<RecruitmentPartici
      * @param userId ユーザーID
      * @return 参加者リスト
      */
-    fun findByUserId(userId: Long): List<RecruitmentParticipantEntity>
+    fun findByUserId(userId: String): List<RecruitmentParticipantEntity>
 
     /**
      * 募集IDとユーザーIDで参加者を検索
@@ -33,7 +33,7 @@ interface JpaRecruitmentParticipantRepository : JpaRepository<RecruitmentPartici
      * @param userId ユーザーID
      * @return 参加者情報、存在しない場合はnull
      */
-    fun findByRecruitmentIdAndUserId(recruitmentId: Long, userId: Long): RecruitmentParticipantEntity?
+    fun findByRecruitmentIdAndUserId(recruitmentId: Long, userId: String): RecruitmentParticipantEntity?
 
     /**
      * 募集IDとユーザーIDで参加者を削除
@@ -41,7 +41,7 @@ interface JpaRecruitmentParticipantRepository : JpaRepository<RecruitmentPartici
      * @param recruitmentId 募集ID
      * @param userId ユーザーID
      */
-    fun deleteByRecruitmentIdAndUserId(recruitmentId: Long, userId: Long)
+    fun deleteByRecruitmentIdAndUserId(recruitmentId: Long, userId: String)
 
     /**
      * 募集IDで参加者数をカウント

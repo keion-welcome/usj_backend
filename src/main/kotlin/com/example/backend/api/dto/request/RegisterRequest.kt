@@ -11,7 +11,7 @@ data class RegisterRequest(
     @field:Email
     @field:Size(max = 255)
     val email: String,
-    
+
     @field:NotBlank
     @field:Size(min = 8, max = 100)
     val password: String

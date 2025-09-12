@@ -38,3 +38,8 @@ out/
 
 ### Kotlin ###
 .kotlin
+
+### AI Tools ###
+.gemini
+.claude
+websocket-test

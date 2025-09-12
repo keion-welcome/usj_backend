@@ -49,7 +49,11 @@ class ProfileEntity(
     var occupation: String,
 
     @Column(nullable = false)
-    var hasAnnualPass: Boolean
+    var hasAnnualPass: Boolean,
+
+    @Size(max = 255)
+    @Column(name = "favorite_attraction", length = 255)
+    var favoriteAttraction: String? = null
 
 ) : BaseEntity() {
     
@@ -58,14 +62,15 @@ class ProfileEntity(
         id = null,
         user = UserEntity(
             email = "",
-            passwordHash = ""
+            password = ""
         ),
         nickname = "",
         gender = Gender.PREFER_NOT_TO_SAY,
         birthdate = LocalDate.now(),
         area = "",
         occupation = "",
-        hasAnnualPass = false
+        hasAnnualPass = false,
+        favoriteAttraction = null
     )
     
     override fun equals(other: Any?): Boolean {

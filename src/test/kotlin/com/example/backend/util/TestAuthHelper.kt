@@ -52,7 +52,7 @@ class TestAuthHelper {
      * @return 認証オブジェクト
      */
     fun mockAuthentication(user: User): Authentication {
-        return createMockAuthentication(user.id!!)
+        return createMockAuthentication(user.userId!!)
     }
 
     /**
@@ -67,9 +67,10 @@ class TestAuthHelper {
         email: String = "test@example.com"
     ): User {
         return User(
-            id = userId,
+            id = 1L,
+            userId = userId,
             email = email,
-            passwordHash = "hashedPassword"
+            password = "hashedPassword"
         )
     }
 

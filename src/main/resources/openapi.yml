@@ -353,14 +353,14 @@ paths:
                 items:
                   $ref: '#/components/schemas/Attraction'
 
-  /api/attractions/{attractionId}:
+  /api/attractions/{attractionName}:
     get:
       tags:
         - attractions
       summary: アトラクション詳細取得
       description: 指定したアトラクションの詳細情報を取得します
       parameters:
-        - name: attractionId
+        - name: attractionName
           in: path
           required: true
           schema:
@@ -914,9 +914,8 @@ components:
         id:
           type: integer
           format: int64
-        attractionId:
-          type: integer
-          format: int64
+        attractionName:
+          type: string
         attraction:
           $ref: '#/components/schemas/Attraction'
         scheduledTime:
@@ -955,12 +954,11 @@ components:
     CreateDatePlanItemRequest:
       type: object
       required:
-        - attractionId
+        - attractionName
         - order
       properties:
-        attractionId:
-          type: integer
-          format: int64
+        attractionName:
+          type: string
         scheduledTime:
           type: string
           format: time

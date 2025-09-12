@@ -1,6 +1,7 @@
 package com.example.backend.api.mapper
 
 import com.example.backend.api.dto.request.CreateProfileRequest
+import com.example.backend.api.dto.request.UpdateProfileRequest
 import com.example.backend.api.dto.response.ProfileResponse
 import com.example.backend.domain.model.Gender
 import com.example.backend.domain.model.Profile
@@ -34,6 +35,24 @@ object ProfileMapper {
      * @param model Profile
      * @return ProfileResponse
      */
+    /**
+     * UpdateProfileRequest DTOをProfileドメインモデルに変換する
+     *
+     * @param request UpdateProfileRequest
+     * @return Profile
+     */
+    fun toModel(request: UpdateProfileRequest): Profile {
+        return Profile(
+            userId = request.userId,
+            nickname = request.nickname,
+            gender = Gender.valueOf(request.gender.uppercase()),
+            birthdate = request.birthdate,
+            area = request.area,
+            occupation = request.occupation,
+            hasAnnualPass = request.hasAnnualPass
+        )
+    }
+
     fun toResponse(model: Profile): ProfileResponse {
         return ProfileResponse(
             id = model.id,

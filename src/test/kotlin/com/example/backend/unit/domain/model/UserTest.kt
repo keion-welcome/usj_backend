@@ -9,40 +9,45 @@ class UserTest {
     @Test
     fun `正常なユーザーが作成される`() {
         val user = User(
-            id = "550e8400-e29b-41d4-a716-446655440001",
+            id = 1L,
+            userId = "550e8400-e29b-41d4-a716-446655440001",
             email = "test@example.com",
-            passwordHash = "hashedPassword"
+            password = "hashedPassword"
         )
 
-        assertThat(user.id).isEqualTo("550e8400-e29b-41d4-a716-446655440001")
+        assertThat(user.id).isEqualTo(1L)
+        assertThat(user.userId).isEqualTo("550e8400-e29b-41d4-a716-446655440001")
         assertThat(user.email).isEqualTo("test@example.com")
-        assertThat(user.passwordHash).isEqualTo("hashedPassword")
+        assertThat(user.password).isEqualTo("hashedPassword")
     }
 
     @Test
     fun `デフォルト値でユーザーが作成される`() {
         val user = User(
             email = "test@example.com",
-            passwordHash = "hashedPassword"
+            password = "hashedPassword"
         )
 
         assertThat(user.id).isNull()
+        assertThat(user.userId).isNull()
         assertThat(user.email).isEqualTo("test@example.com")
-        assertThat(user.passwordHash).isEqualTo("hashedPassword")
+        assertThat(user.password).isEqualTo("hashedPassword")
     }
 
     @Test
     fun `ユーザーが等価性を持つ`() {
         val user1 = User(
-            id = "550e8400-e29b-41d4-a716-446655440001",
+            id = 1L,
+            userId = "550e8400-e29b-41d4-a716-446655440001",
             email = "test@example.com",
-            passwordHash = "hashedPassword"
+            password = "hashedPassword"
         )
 
         val user2 = User(
-            id = "550e8400-e29b-41d4-a716-446655440001",
+            id = 1L,
+            userId = "550e8400-e29b-41d4-a716-446655440001",
             email = "test@example.com",
-            passwordHash = "hashedPassword"
+            password = "hashedPassword"
         )
 
         assertThat(user1).isEqualTo(user2)

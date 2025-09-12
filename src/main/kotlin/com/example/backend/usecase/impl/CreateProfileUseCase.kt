@@ -24,44 +24,64 @@ class CreateProfileUseCase(
      *
      * @param profile 作成するプロフィール
      * @return 作成されたプロフィール
-     * @throws IllegalArgumentException ユーザーが存在しない場合
+     * @throws IllegalArgumentException バリデーションエラーの場合
      */
     fun createProfile(profile: Profile): Profile {
-        // userIdがnullの場合はエラー
-        val userId = profile.userId ?: throw IllegalArgumentException("User ID cannot be null")
+        validateProfileData(profile)
         
-        // ビジネスルール：ユーザー存在確認
-        userRepositoryPort.findById(userId)
-            ?: throw IllegalArgumentException("User with id $userId not found")
-        
-        // ビジネスルール：プロフィール重複確認
-        val existingProfile = profileRepositoryPort.findByUserId(userId)
+        val existingProfile = profileRepositoryPort.findByUserId(profile.userId!!)
         if (existingProfile != null) {
-            throw IllegalArgumentException("Profile for user $userId already exists")
+            throw IllegalArgumentException("Profile for user ${profile.userId} already exists")
         }
         
-        // ビジネスルール：年齢制限チェック（18歳以上）
-        validateAge(profile.birthdate)
-        
-        // データアクセス処理
         return profileRepositoryPort.save(profile)
     }
-    
+
     /**
-     * 年齢制限のチェック（18歳以上、150歳以下）
+     * プロフィールデータの統合バリデーション
+     *
+     * @param profile バリデーション対象のプロフィール
+     * @throws IllegalArgumentException バリデーションエラーの場合
      */
-    private fun validateAge(birthdate: LocalDate) {
-        val age = Period.between(birthdate, LocalDate.now()).years
-        
-        // 18歳未満は利用不可
-        require(age >= 18) {
-            "18歳未満の方はご利用いただけません。"
+    private fun validateProfileData(profile: Profile) {
+        val errors = mutableListOf<String>()
+
+        if (profile.userId == null) {
+            errors.add("User ID cannot be null")
+        } else {
+            val user = userRepositoryPort.findByUserId(profile.userId)
+            if (user == null) {
+                errors.add("User with id ${profile.userId} not found")
+            }
         }
-        
-        // 150歳以上は不正な入力とみなす
-        require(age <= 150) {
-            "正しい生年月日を入力してください。"
+
+        if (profile.nickname.isBlank()) {
+            errors.add("Nickname cannot be blank")
+        }
+
+        if (profile.nickname.length > 50) {
+            errors.add("Nickname must be 50 characters or less")
+        }
+
+        if (profile.area.isBlank()) {
+            errors.add("Area cannot be blank")
+        }
+
+        if (profile.occupation.isBlank()) {
+            errors.add("Occupation cannot be blank")
+        }
+
+        // 年齢制限のチェック（18歳以上、150歳以下）
+        val age = Period.between(profile.birthdate, LocalDate.now()).years
+        if (age < 18) {
+            errors.add("18歳未満の方はご利用いただけません。")
+        }
+        if (age > 150) {
+            errors.add("正しい生年月日を入力してください。")
+        }
+
+        if (errors.isNotEmpty()) {
+            throw IllegalArgumentException("Validation failed: ${errors.joinToString(", ")}")
         }
     }
-    
 }

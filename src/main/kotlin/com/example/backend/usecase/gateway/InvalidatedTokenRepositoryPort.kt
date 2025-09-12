@@ -6,7 +6,8 @@ import com.example.backend.domain.model.InvalidatedToken
  * 無効化されたトークンリポジトリへのポート（インターフェース）。
  * ユースケース層はこのインターフェースに依存します。
  */
-interface InvalidatedTokenRepositoryPort {
+interface
+InvalidatedTokenRepositoryPort {
     /**
      * トークンが無効化されているかどうかを確認します。
      *

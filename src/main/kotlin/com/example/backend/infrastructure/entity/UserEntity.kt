@@ -24,8 +24,9 @@ class UserEntity(
     var email: String,
 
     // パスワード（ハッシュ化された文字列を保存）
+    @Size(min = 8, max = 255)
     @Column(nullable = false, length = 255)
-    var passwordHash: String,
+    var password: String,
 
     // プロフィールとの1対1リレーションシップ
     @OneToOne(mappedBy = "user", cascade = [CascadeType.ALL], orphanRemoval = true)
@@ -37,7 +38,7 @@ class UserEntity(
     constructor() : this(
         id = null,
         email = "",
-        passwordHash = "",
+        password = "",
         profile = null
     )
     

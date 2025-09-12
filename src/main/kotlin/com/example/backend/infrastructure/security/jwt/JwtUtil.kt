@@ -27,15 +27,15 @@ class JwtUtil {
 
     /**
      * JWTトークンを生成する
-     * @param userId ユーザーの外部ID（UUID）
+     * @param email ユーザーのメールアドレス
      * @return 生成されたJWTトークン
      */
-    fun generateToken(userId: String): String {
+    fun generateToken(email: String): String {
         val now = Date()
         val expiryDate = Date(now.time + expirationTimeMs)
 
         return Jwts.builder()
-            .setSubject(userId)  // UUIDを使用
+            .setSubject(email)  // subjectとしてメールアドレスを使用
             .setIssuedAt(now)
             .setExpiration(expiryDate)
             .signWith(key, algorithm)
@@ -45,14 +45,14 @@ class JwtUtil {
     /**
      * トークンの有効性を検証する
      * @param token JWTトークン
-     * @param userIdFromDb DBから取得したユーザーの外部ID
+     * @param emailFromDb DBから取得したユーザーのメールアドレス
      * @return 有効な場合はtrue
      */
-    fun validateToken(token: String, userIdFromDb: String): Boolean {
+    fun validateToken(token: String, emailFromDb: String): Boolean {
         return try {
-            val userIdFromToken = getSubject(token)
-            // トークンのsubjectとDBのユーザーIDが一致し、かつ期限切れでないことを確認
-            userIdFromToken == userIdFromDb && !isTokenExpired(token)
+            val emailFromToken = getSubject(token)
+            // トークンのsubjectとDBのユーザーメールアドレスが一致し、かつ期限切れでないことを確認
+            emailFromToken == emailFromDb && !isTokenExpired(token)
         } catch (ex: Exception) {
             false
         }
@@ -61,7 +61,7 @@ class JwtUtil {
     /**
      * トークンから subject（ユーザー識別子）を取得する
      * @param token JWTトークン
-     * @return ユーザー識別子
+     * @return ユーザー識別子（このアプリケーションではメールアドレス）
      */
     fun getSubject(token: String): String {
         val parser = Jwts.parserBuilder()

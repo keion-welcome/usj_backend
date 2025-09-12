@@ -42,13 +42,16 @@ class RegisterUseCase(
         val generatedId = Uuid7Utils.generate()
 
         // DTO → ドメインモデルへ変換（生成したIDを付与）
-        val user = UserMapper.toDomain(request, encodedPassword).copy(id = generatedId)
+        val user = UserMapper.toDomain(request, encodedPassword).copy(userId = generatedId)
 
         // ユーザーを保存
         val saved = userRepository.save(user)
 
-        // JWTトークンを生成して返却
-        val token = jwtUtil.generateToken(saved.id!!)
+        // JWTトークンを生成して返却（null安全性を確保）
+        val token = saved.userId?.let { userId ->
+            jwtUtil.generateToken(userId)
+        } ?: throw IllegalStateException("User registration failed: User ID was not generated")
+        
         return AuthResponse(token)
     }
 }

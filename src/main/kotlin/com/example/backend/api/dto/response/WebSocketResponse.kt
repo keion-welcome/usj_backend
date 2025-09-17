@@ -12,6 +12,8 @@ enum class WebSocketMessageType {
     PARTICIPANT_LEFT,
     RECRUITMENT_COMPLETED,
     RECRUITMENT_CANCELLED,
+    CHAT_MESSAGE_SENT,
+    CHAT_ROOM_CREATED,
     ERROR
 }
 
@@ -89,4 +91,17 @@ data class RecruitmentStatusChangedMessage(
 data class ErrorMessage(
     val message: String,
     val code: String? = null
+)
+
+/**
+ * チャットルーム作成通知メッセージ
+ *
+ * @property chatRoomId 作成されたチャットルームID
+ * @property recruitmentId 紐づく募集ID
+ * @property participants 参加者IDリスト
+ */
+data class ChatRoomCreatedMessage(
+    val chatRoomId: Long,
+    val recruitmentId: Long,
+    val participants: List<Long>
 )

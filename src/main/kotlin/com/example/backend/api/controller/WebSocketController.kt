@@ -2,7 +2,10 @@ package com.example.backend.api.controller
 
 import com.example.backend.api.dto.request.JoinRecruitmentRequest
 import com.example.backend.api.dto.request.LeaveRecruitmentRequest
+import com.example.backend.api.dto.request.SendChatMessageRequest
 import com.example.backend.api.dto.response.*
+import com.example.backend.domain.model.ChatRoom
+import com.example.backend.usecase.impl.SendChatMessageUseCase
 import com.example.backend.usecase.usecase.RecruitmentParticipationService
 import com.example.backend.usecase.usecase.RecruitmentService
 import org.springframework.messaging.handler.annotation.MessageMapping
@@ -11,6 +14,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate
 import org.springframework.messaging.simp.annotation.SendToUser
 import org.springframework.stereotype.Controller
 import java.security.Principal
+import java.time.LocalDateTime
 
 /**
  * WebSocketコントローラー
@@ -21,7 +25,8 @@ import java.security.Principal
 class WebSocketController(
     private val recruitmentService: RecruitmentService,
     private val recruitmentParticipationService: RecruitmentParticipationService,
-    private val messagingTemplate: SimpMessagingTemplate
+    private val messagingTemplate: SimpMessagingTemplate,
+    private val sendChatMessageUseCase: SendChatMessageUseCase
 ) {
 
     /**
@@ -183,5 +188,74 @@ class WebSocketController(
         
         // 全体の募集リストにも通知（リストビューの更新用）
         messagingTemplate.convertAndSend("/topic/recruitments", response)
+    }
+
+    /**
+     * チャットメッセージを送信する
+     *
+     * @param request チャットメッセージ送信リクエスト
+     * @param principal 認証情報
+     */
+    @MessageMapping("/chat/send")
+    fun sendChatMessage(@Payload request: SendChatMessageRequest, principal: Principal) {
+        try {
+            val userId = principal.name.toLong()
+            val chatMessage = sendChatMessageUseCase.execute(request, userId)
+
+            // ドメインモデルをレスポンスDTOに変換
+            val chatMessageResponse = ChatMessageResponse(
+                messageId = chatMessage.id,
+                chatRoomId = chatMessage.chatRoomId,
+                userId = chatMessage.userId,
+                userNickname = chatMessage.userNickname,
+                userIconUrl = chatMessage.userIconUrl,
+                content = chatMessage.content,
+                timestamp = chatMessage.timestamp
+            )
+
+            val response = WebSocketResponse(
+                type = WebSocketMessageType.CHAT_MESSAGE_SENT,
+                recruitmentId = 0, // チャットでは使用しないためダミー値
+                data = chatMessageResponse
+            )
+
+            messagingTemplate.convertAndSend("/topic/chat/${request.chatRoomId}", response)
+
+        } catch (e: SecurityException) {
+            // 参加者でない場合のエラー
+            sendErrorToUser(principal.name, e.message ?: "メッセージを送信する権限がありません", "FORBIDDEN")
+        } catch (e: Exception) {
+            // その他のエラー
+            sendErrorToUser(principal.name, e.message ?: "メッセージの送信中にエラーが発生しました", "SEND_ERROR")
+        }
+    }
+
+    /**
+     * チャットルームが作成されたことを参加者に通知する
+     *
+     * @param chatRoom 作成されたチャットルーム
+     */
+    fun notifyChatRoomCreated(chatRoom: ChatRoom) {
+        val message = ChatRoomCreatedMessage(
+            chatRoomId = chatRoom.id,
+            recruitmentId = chatRoom.recruitmentId,
+            participants = chatRoom.participants
+        )
+
+        val response = WebSocketResponse(
+            type = WebSocketMessageType.CHAT_ROOM_CREATED,
+            recruitmentId = chatRoom.recruitmentId,
+            data = message
+        )
+
+        // 参加者一人ひとりに通知を送信
+        chatRoom.participants.forEach { userId ->
+            // SimpMessagingTemplateはユーザー名を解決できないため、IDを文字列に変換して使用
+            messagingTemplate.convertAndSendToUser(
+                userId.toString(),
+                "/queue/messages", // 各ユーザー専用のキュー
+                response
+            )
+        }
     }
 }

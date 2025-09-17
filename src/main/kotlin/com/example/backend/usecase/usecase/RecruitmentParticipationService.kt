@@ -1,8 +1,12 @@
 package com.example.backend.usecase.usecase
 
+import com.example.backend.api.controller.WebSocketController
+import com.example.backend.domain.model.ChatRoom
 import com.example.backend.domain.model.Recruitment
 import com.example.backend.domain.model.RecruitmentStatus
 import com.example.backend.usecase.gateway.RecruitmentRepositoryPort
+import com.example.backend.usecase.impl.CreateChatRoomUseCase
+import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
 
 /**
@@ -35,7 +39,9 @@ interface RecruitmentParticipationService {
  */
 @Service
 class RecruitmentParticipationServiceImpl(
-    private val recruitmentRepositoryPort: RecruitmentRepositoryPort
+    private val recruitmentRepositoryPort: RecruitmentRepositoryPort,
+    private val createChatRoomUseCase: CreateChatRoomUseCase,
+    @Lazy private val webSocketController: WebSocketController // 循環参照を避けるために@Lazyを使用
 ) : RecruitmentParticipationService {
 
     override fun joinRecruitment(recruitmentId: Long, userId: Long): Recruitment? {
@@ -63,11 +69,22 @@ class RecruitmentParticipationServiceImpl(
 
         // 参加処理
         val success = recruitmentRepositoryPort.joinRecruitment(recruitmentId, userId)
-        return if (success) {
-            recruitmentRepositoryPort.findById(recruitmentId)
-        } else {
-            null
+        if (!success) {
+            return null
         }
+
+        val updatedRecruitment = recruitmentRepositoryPort.findById(recruitmentId) ?: return null
+
+        // 満員になったかチェックし、チャットルームを作成
+        if (updatedRecruitment.isFull()) {
+            val chatRoom = createChatRoomUseCase.createForRecruitment(updatedRecruitment)
+            if (chatRoom != null) {
+                // 参加者にチャットルーム作成を通知
+                webSocketController.notifyChatRoomCreated(chatRoom)
+            }
+        }
+
+        return updatedRecruitment
     }
 
     override fun leaveRecruitment(recruitmentId: Long, userId: Long): Recruitment? {
